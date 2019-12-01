@@ -1,3 +1,4 @@
 data/
 lookups/
 .venv/
+__pycache__/
