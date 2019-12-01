@@ -3,14 +3,14 @@ import sys
 from lxml import etree
 
 tags = {
-    'adjective': 'ADJ',
-    'adverb': 'ADV',
-    'noun': 'NOUN',
-    'pnoun_firstname': 'PROPN',
-    'pnoun_lastname': 'PROPN',
-    'pnoun_misc': 'PROPN',
-    'pnoun_place': 'PROPN',
-    'verb': 'VERB'
+    'adjective': 'adj',
+    'adverb': 'adv',
+    'noun': 'noun',
+    'pnoun_firstname': 'propn',
+    'pnoun_lastname': 'propn',
+    'pnoun_misc': 'propn',
+    'pnoun_place': 'propn',
+    'verb': 'verb'
 }
 
 index = {}
