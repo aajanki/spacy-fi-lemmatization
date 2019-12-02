@@ -15,3 +15,5 @@ python scripts/merge_lemma_indexes.py lookups/fi_lemma_index1.json lookups/fi_le
 rm lookups/fi_lemma_index1.json lookups/fi_lemma_index2.json
 
 python scripts/lemmarules.py data/corevoikko/data/subst.aff data/corevoikko/data/verb.aff lookups/fi_lemma_rules.json
+
+python scripts/lemmaexc.py > lookups/fi_lemma_exc.json

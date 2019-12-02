@@ -24,7 +24,7 @@ class FinnishLemmatizer(Lemmatizer):
         oov_forms = []
         string = _enclitics_re.sub('', string)
         if string in index:
-            forms.append(string)
+            return [string]
 
         for old, new in rules:
             if string.endswith(old):
@@ -57,4 +57,6 @@ def create_lemmatizer():
         lookups.add_table('lemma_rules', json.load(f))
     with open('lookups/fi_lemma_index.json') as f2:
         lookups.add_table('lemma_index', json.load(f2))
+    with open('lookups/fi_lemma_exc.json') as f3:
+        lookups.add_table('lemma_exc', json.load(f3))
     return FinnishLemmatizer(lookups)
