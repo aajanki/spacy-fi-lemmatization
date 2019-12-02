@@ -49,6 +49,7 @@ testcases = {
         ('tonttupukuihin', 'tonttupuku'),
         ('kuopistaan', 'kuoppa'),
         ('maakuopistaan', 'maakuoppa'),
+        ('johdolle', 'johto'),
         ('tietohallintajohdolle', 'tietohallintajohto'),
         ('epäjärjestelmällisyydellä', 'epäjärjestelmällisyys'),
         ('epäjärjestelmällisyydelläänkäänköhän', 'epäjärjestelmällisyys'),

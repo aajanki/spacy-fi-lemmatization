@@ -1,3 +1,4 @@
 lxml
 plac
 spacy>=2.2
+voikko>=0.5
