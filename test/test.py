@@ -56,6 +56,11 @@ testcases = {
         ('sanottavansa', 'sanottava'),
         ('1500-luvulla', '1500-luku'),
         ('kokkoko', 'kokko'),
+        ('yksikkö', 'yksikkö'),
+        ('yksikkökö', 'yksikkö'),
+        ('leipä', 'leipä'),
+        ('työlupa', 'työlupa'),
+        ('työlupakaan', 'työlupa'),
     ],
 
     'verb': [
@@ -72,6 +77,7 @@ testcases = {
         ('tuli', 'tulla'),
         ('tulee', 'tulla'),
         ('pelastuimme', 'pelastua'),
+        ('hukkaan', 'hukkaan'),
     ],
 
     'adj': [

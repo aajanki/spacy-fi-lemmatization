@@ -8,11 +8,15 @@ from collections import OrderedDict
 from spacy.lemmatizer import Lemmatizer
 from spacy.lookups import Lookups
 
-
+# http://scripta.kotus.fi/visk/sisallys.php?p=126
 _enclitics = [
-    'ko', 'kö', 'han', 'hän', 'pa', 'pä', 'kaan', 'kään', 'kin'
+    'ko', 'kö', 'han', 'hän', 'pa', 'pä', 'kaan', 'kään', 'kin',
+    # Most common merged enclitics:
+    'kohan', 'köhän', 'pahan', 'pähän', 'kaankohan', 'käänköhän'
+    # TODO: Enclitics with restricted uses: -kA on the negative verb,
+    # -s on interrogatives
 ]
-_enclitics_re = re.compile('|'.join(x + '$' for x in _enclitics))
+_enclitics_re = re.compile('(?:' + '|'.join(_enclitics) + ')$')
 
 
 class FinnishLemmatizer(Lemmatizer):
@@ -25,6 +29,8 @@ class FinnishLemmatizer(Lemmatizer):
         string = _enclitics_re.sub('', string)
         if string in index:
             return [string]
+        else:
+            oov_forms.append(string)
 
         for old, new in rules:
             if string.endswith(old):
@@ -33,8 +39,6 @@ class FinnishLemmatizer(Lemmatizer):
                     pass
                 elif form in index or not form.isalpha():
                     forms.append(form)
-                else:
-                    oov_forms.append(form)
         # Remove duplicates but preserve the ordering of applied "rules"
         forms = list(OrderedDict.fromkeys(forms))
         # Put exceptions at the front of the list, so they get priority.
