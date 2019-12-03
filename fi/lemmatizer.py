@@ -7,6 +7,8 @@ from collections import OrderedDict
 
 from spacy.lemmatizer import Lemmatizer
 from spacy.lookups import Lookups
+from spacy.symbols import NOUN, VERB, ADJ, PUNCT, PROPN, ADV, NUM
+
 
 # http://scripta.kotus.fi/visk/sisallys.php?p=126
 _enclitics = [
@@ -20,6 +22,43 @@ _enclitics_re = re.compile('(?:' + '|'.join(_enclitics) + ')$')
 
 
 class FinnishLemmatizer(Lemmatizer):
+    def __call__(self, string, univ_pos, morphology=None):
+        """Lemmatize a string.
+
+        string (unicode): The string to lemmatize, e.g. the token text.
+        univ_pos (unicode / int): The token's universal part-of-speech tag.
+        morphology (dict): The token's morphological features following the
+            Universal Dependencies scheme.
+        RETURNS (list): The available lemmas for the string.
+        """
+        if univ_pos in (NOUN, "NOUN", "noun"):
+            univ_pos = "noun"
+        elif univ_pos in (VERB, "VERB", "verb"):
+            univ_pos = "verb"
+        elif univ_pos in (ADJ, "ADJ", "adj"):
+            univ_pos = "adj"
+        elif univ_pos in (ADV, "ADV", "adv"):
+            univ_pos = "adv"
+        elif univ_pos in (NUM, "NUM", "num"):
+            univ_pos = "num"
+        elif univ_pos in (PUNCT, "PUNCT", "punct"):
+            univ_pos = "punct"
+        elif univ_pos in (PROPN, "PROPN"):
+            return [string]
+        else:
+            return [string.lower()]
+
+        index_table = self.lookups.get_table("lemma_index", {})
+        exc_table = self.lookups.get_table("lemma_exc", {})
+        rules_table = self.lookups.get_table("lemma_rules", {})
+        lemmas = self.lemmatize(
+            string,
+            index_table.get(univ_pos, {}),
+            exc_table.get(univ_pos, {}),
+            rules_table.get(univ_pos, []),
+        )
+        return lemmas
+
     def lemmatize(self, string, index, exceptions, rules):
         orig = string
         string = string.lower()
