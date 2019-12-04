@@ -16,7 +16,9 @@ for line in sys.stdin:
     ]
 
     if analyses:
-        noun_index.add(analyses[0].get('BASEFORM').strip('-').lower())
+        baseform = analyses[0].get('BASEFORM').strip('-').lower()
+        if not baseform.endswith('mme') or (baseform in ['amme', 'lumme']):
+            noun_index.add(baseform)
 
 noun_index = sorted(noun_index)
 

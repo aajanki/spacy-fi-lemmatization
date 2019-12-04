@@ -1,6 +1,7 @@
 import json
 import sys
 import plac
+from collections import OrderedDict
 
 
 @plac.annotations(
@@ -15,8 +16,8 @@ def main(file1, file2):
         keys = set(index1.keys())
         keys.update(set(index2.keys()))
 
-        merged = {}
-        for pos in keys:
+        merged = OrderedDict()
+        for pos in sorted(keys):
             words = set(index1.get(pos, []))
             words.update(index2.get(pos, []))
             merged[pos] = sorted(words)

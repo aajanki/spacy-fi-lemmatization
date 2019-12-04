@@ -20,6 +20,13 @@ _enclitics = [
 ]
 _enclitics_re = re.compile('(?:' + '|'.join(_enclitics) + ')$')
 
+# http://scripta.kotus.fi/visk/sisallys.php?p=95
+_possessive_suffixes= [
+    'ni', 'si', 'mme', 'nne', 'nsa', 'nsä', 'an', 'en', 'in', 'on', 'un',
+    'yn', 'än', 'ön'
+]
+_pos_suffix_re = re.compile('(?:' + '|'.join(_possessive_suffixes) + ')$')
+
 
 class FinnishLemmatizer(Lemmatizer):
     def __call__(self, string, univ_pos, morphology=None):
@@ -51,25 +58,37 @@ class FinnishLemmatizer(Lemmatizer):
         index_table = self.lookups.get_table("lemma_index", {})
         exc_table = self.lookups.get_table("lemma_exc", {})
         rules_table = self.lookups.get_table("lemma_rules", {})
+        possessive_suffix_rules = _pos_suffix_re if univ_pos else None
         lemmas = self.lemmatize(
             string,
             index_table.get(univ_pos, {}),
             exc_table.get(univ_pos, {}),
             rules_table.get(univ_pos, []),
+            possessive_suffix_rules,
         )
         return lemmas
 
-    def lemmatize(self, string, index, exceptions, rules):
+    def lemmatize(self, string, index, exceptions, rules, possessive_suffix_rules):
         orig = string
         string = string.lower()
 
+        if string in index:
+            return [string]
+        
         forms = []
         oov_forms = []
         string = _enclitics_re.sub('', string)
-        if string in index:
+        if len(string) > 2 and string in index:
             return [string]
         else:
             oov_forms.append(string)
+
+        if possessive_suffix_rules:
+            string = possessive_suffix_rules.sub('', string)
+            if len(string) > 2 and string in index:
+                return [string]
+            else:
+                oov_forms.append(string)
 
         for old, new in rules:
             if string.endswith(old):
@@ -84,7 +103,7 @@ class FinnishLemmatizer(Lemmatizer):
         # This is a dodgy heuristic -- but it's the best we can do until we get
         # frequencies on this. We can at least prune out problematic exceptions,
         # if they shadow more frequent analyses.
-        for form in exceptions.get(string, []):
+        for form in exceptions.get(orig.lower(), []):
             if form not in forms:
                 forms.insert(0, form)
         if not forms:
