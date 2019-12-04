@@ -26,16 +26,22 @@ possessive_suffix_rules = {
     "noun": [
         ["ni", ""],
         ["ni", "n"],
+        ["kseni", "ksi"],
         ["si", ""],
         ["si", "n"],
+        ["ksesi", "ksi"],
         ["mme", ""],
         ["mme", "n"],
+        ["ksemme", "ksi"],
         ["nne", ""],
         ["nne", "n"],
+        ["ksenne", "ksi"],
         ["nsa", ""],
         ["nsa", "n"],
+        ["ksensa", "ksi"],
         ["nsä", ""],
         ["nsä", "n"],
+        ["ksensä", "ksi"],
         ["an", ""],
         ["en", ""],
         ["in", ""],
@@ -46,6 +52,7 @@ possessive_suffix_rules = {
         ["ön", ""],
     ]
 }
+
 
 class FinnishLemmatizer(Lemmatizer):
     def __call__(self, string, univ_pos, morphology=None):

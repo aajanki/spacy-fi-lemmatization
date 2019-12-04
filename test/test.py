@@ -33,6 +33,7 @@ testcases = {
         ('opettajiimme', 'opettaja'),
         ('marjaansa', 'marja'),
         ('marjaksemme', 'marja'),
+        ('isäksesi', 'isä'),
         ('sahaansa', 'saha'),
         ('sahojensa', 'saha'),
         ('taloihinsa', 'talo'),
