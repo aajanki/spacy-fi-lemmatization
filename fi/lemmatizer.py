@@ -21,12 +21,31 @@ _enclitics = [
 _enclitics_re = re.compile('(?:' + '|'.join(_enclitics) + ')$')
 
 # http://scripta.kotus.fi/visk/sisallys.php?p=95
-_possessive_suffixes= [
-    'ni', 'si', 'mme', 'nne', 'nsa', 'nsä', 'an', 'en', 'in', 'on', 'un',
-    'yn', 'än', 'ön'
-]
-_pos_suffix_re = re.compile('(?:' + '|'.join(_possessive_suffixes) + ')$')
-
+# TODO: move to lookups
+possessive_suffix_rules = {
+    "noun": [
+        ["ni", ""],
+        ["ni", "n"],
+        ["si", ""],
+        ["si", "n"],
+        ["mme", ""],
+        ["mme", "n"],
+        ["nne", ""],
+        ["nne", "n"],
+        ["nsa", ""],
+        ["nsa", "n"],
+        ["nsä", ""],
+        ["nsä", "n"],
+        ["an", ""],
+        ["en", ""],
+        ["in", ""],
+        ["on", ""],
+        ["un", ""],
+        ["yn", ""],
+        ["än", ""],
+        ["ön", ""],
+    ]
+}
 
 class FinnishLemmatizer(Lemmatizer):
     def __call__(self, string, univ_pos, morphology=None):
@@ -58,13 +77,12 @@ class FinnishLemmatizer(Lemmatizer):
         index_table = self.lookups.get_table("lemma_index", {})
         exc_table = self.lookups.get_table("lemma_exc", {})
         rules_table = self.lookups.get_table("lemma_rules", {})
-        possessive_suffix_rules = _pos_suffix_re if univ_pos else None
         lemmas = self.lemmatize(
             string,
             index_table.get(univ_pos, {}),
             exc_table.get(univ_pos, {}),
             rules_table.get(univ_pos, []),
-            possessive_suffix_rules,
+            possessive_suffix_rules.get(univ_pos, []),
         )
         return lemmas
 
@@ -83,20 +101,25 @@ class FinnishLemmatizer(Lemmatizer):
         else:
             oov_forms.append(string)
 
-        if possessive_suffix_rules:
-            string = possessive_suffix_rules.sub('', string)
-            if len(string) > 2 and string in index:
-                return [string]
-            else:
-                oov_forms.append(string)
-
-        for old, new in rules:
+        reduced_forms = [string]
+        for old, new in possessive_suffix_rules:
             if string.endswith(old):
                 form = string[: len(string) - len(old)] + new
                 if not form:
                     pass
                 elif form in index or not form.isalpha():
-                    forms.append(form)
+                    return [form]
+                else:
+                    reduced_forms.append(form)
+
+        for s in reduced_forms:
+            for old, new in rules:
+                if s.endswith(old):
+                    form = s[: len(s) - len(old)] + new
+                    if not form:
+                        pass
+                    elif form in index or not form.isalpha():
+                        forms.append(form)
         # Remove duplicates but preserve the ordering of applied "rules"
         forms = list(OrderedDict.fromkeys(forms))
         # Put exceptions at the front of the list, so they get priority.
