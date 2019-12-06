@@ -53,6 +53,73 @@ possessive_suffix_rules = {
     ]
 }
 
+gradations = {
+    "av1": {
+        "mm": "mp",
+        "nn": "nt",
+        "ll": "lt",
+        "rr": "rt",
+        "ng": "nk",
+        "t": "tt",
+        "p": "pp",
+        "k": "kk",
+        "v": "p",
+        "d": "t",
+        "uvu": "uku",
+        "yvy": "yky",
+    },
+    "av2": {
+        "tt": "t",
+        "pp": "p",
+        "kk": "k",
+        "mp": "mm",
+        "nt": "nn",
+        "lt": "ll",
+        "rt": "rr",
+        "nk": "ng",
+        "p": "v",
+        "t": "d",
+    },
+    "av3": {
+        "j": "k",
+    },
+    "av4": {
+        "k": "j"
+    },
+    "av5": {
+        "": "k",
+    },
+    "av6": {
+        "k": "",
+    }
+}
+
+gradation_patterns = [
+    ("av1", re.compile(r"^(.+?)(uvu|yvy)()$")),
+    ("av1", re.compile(r"^(.+?)(mm|nn|ll|rr|ng|t|p|k|v|d)([aeiouyäö][bcdfghjklmnpqrstvwxz]?)$")),
+    ("av2", re.compile(r"^(.+?)(tt|pp|kk|mp|nt|lt|rt|nk|p|t)([aeiouyäö][bcdfghjklmnpqrstvwxz]?)$"),),
+    ("av3", re.compile(r"^(.+?)(j)([aeiouyäö])$")),
+    ("av4", re.compile(r"^(.+?)(k)([aeiouyäö])$")),
+    ("av5", re.compile(r"^(.+?[aeiouyäö][aeiouyäö])()([aeiouyäö])$")),
+    ("av6", re.compile(r"^(.+?[aeiouyäö][aeiouyäö])(k)([aeiouyäö])$"))
+]
+
+def reverse_gradation_noun(word):
+    forms = []
+    for gname, gpat in gradation_patterns:
+        m = gpat.match(word)
+        if m:
+            forms.append(m.group(1) + gradations[gname][m.group(2)] + m.group(3))
+
+    if forms:
+        return forms
+    else:
+        return [word]
+
+gradation_reversal = {
+    "noun": reverse_gradation_noun
+}
+
 
 class FinnishLemmatizer(Lemmatizer):
     def __call__(self, string, univ_pos, morphology=None):
@@ -90,10 +157,11 @@ class FinnishLemmatizer(Lemmatizer):
             exc_table.get(univ_pos, {}),
             rules_table.get(univ_pos, []),
             possessive_suffix_rules.get(univ_pos, []),
+            gradation_reversal.get(univ_pos, lambda x: []),
         )
         return lemmas
 
-    def lemmatize(self, string, index, exceptions, rules, possessive_suffix_rules):
+    def lemmatize(self, string, index, exceptions, rules, possessive_suffix_rules, reverse_gradation):
         orig = string
         string = string.lower()
 
@@ -122,18 +190,17 @@ class FinnishLemmatizer(Lemmatizer):
         for s in reduced_forms:
             for old, new in rules:
                 if s.endswith(old):
-                    form = s[: len(s) - len(old)] + new
-                    if not form:
-                        pass
-                    elif form in index or not form.isalpha():
-                        forms.append(form)
+                    rule_result = s[: len(s) - len(old)] + new
+                    for form in reverse_gradation(rule_result) + [rule_result]:
+                        if form and (form in index or not form.isalpha()):
+                            forms.append(form)
         # Remove duplicates but preserve the ordering of applied "rules"
         forms = list(OrderedDict.fromkeys(forms))
         # Put exceptions at the front of the list, so they get priority.
         # This is a dodgy heuristic -- but it's the best we can do until we get
         # frequencies on this. We can at least prune out problematic exceptions,
         # if they shadow more frequent analyses.
-        for form in exceptions.get(orig.lower(), []):
+        for form in exceptions.get(string, []):
             if form not in forms:
                 forms.insert(0, form)
         if not forms:
@@ -141,6 +208,7 @@ class FinnishLemmatizer(Lemmatizer):
         if not forms:
             forms.append(orig)
         return forms
+
 
 
 def create_lemmatizer():

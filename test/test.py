@@ -73,6 +73,41 @@ testcases = {
         ('leipä', 'leipä'),
         ('työlupa', 'työlupa'),
         ('työlupakaan', 'työlupa'),
+
+        # gradation test cases
+        # av1
+        ('valikon', 'valikko'),
+        ('maton', 'matto'),
+        ('kaapin', 'kaappi'),
+        ('ruukun', 'ruukku'),
+        ('somman', 'sompa'),
+        ('tavan', 'tapa'),
+        ('kunnan', 'kunta'),
+        ('killan', 'kilta'),
+        ('kerran', 'kerta'),
+        ('pöydän', 'pöytä'),
+        ('hangon', 'hanko'),
+        ('puvun', 'puku'),
+        ('kyvyn', 'kyky'),
+        # av2
+        ('riitteen', 'riite'),
+        ('oppaan', 'opas'),
+        ('liikkeen', 'liike'),
+        ('lumpeen', 'lumme'),
+        ('tarpeen', 'tarve'),
+        ('ranteen', 'ranne'),
+        ('siveltimen', 'sivellin'),
+        ('vartaan', 'varras'),
+        ('sateen', 'sade'),
+        ('kankaan', 'kangas'),
+        # av3
+        ('järjen', 'järki'),
+        # av4
+        ('palkeen', 'palje'),
+        # av5
+        ('vuoan', 'vuoka'),
+        # av6
+        ('säikeen', 'säie')
     ],
 
     'verb': [
@@ -90,6 +125,10 @@ testcases = {
         ('tulee', 'tulla'),
         ('pelastuimme', 'pelastua'),
         ('hukkaan', 'hukkaan'),
+
+        # gradation, av2
+        ('lobbaan', 'lobata'),
+        ('diggaan', 'digata'),
     ],
 
     'adj': [
