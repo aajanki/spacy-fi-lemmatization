@@ -11,24 +11,25 @@ from collections import OrderedDict
     output=('Output file path', 'positional'),
 )
 def main(noun_affix_file, verb_affix_file, output):
-    rule_types = {
-        'noun': noun_affix_file,
-        'verb': verb_affix_file
-    }
-
-    rules = {}
-    for upos, file in rule_types.items():
-        rulelist = []
-        for t in voikkoinfl.readInflectionTypes(file):
-            for rule in t.inflectionRules:
-                for old, new in expand(t, rule):
-                    rulelist.append((old, new))
-
-        rulelist = list(OrderedDict.fromkeys(rulelist))
-        rules[upos] = rulelist
+    rules = OrderedDict([
+        ('noun', rules_from_affix_file(noun_affix_file)),
+        ('verb', rules_from_affix_file(verb_affix_file)),
+    ])
 
     with open(output, 'w', encoding='utf-8') as fp:
         json.dump(rules, fp=fp, indent=2, ensure_ascii=False)
+
+
+def rules_from_affix_file(affix_file):
+    rulelist = []
+    for t in voikkoinfl.readInflectionTypes(affix_file):
+        for rule in t.inflectionRules:
+            for old, new in expand(t, rule):
+                rulelist.append((old, new))
+
+    rulelist = list(OrderedDict.fromkeys(rulelist))
+    return rulelist
+
 
 
 def expand(inflection_type, rule):

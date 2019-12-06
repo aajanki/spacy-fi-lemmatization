@@ -154,7 +154,9 @@ testcases = {
     'num': [
         ('nollakin', 'nolla'),
         ('neljäs', 'neljä'),
-        ('viidestä', 'viisi'),
+        ('viiden', 'viisi'),
+        ('viidenkin', 'viisi'),
+        ('kymmentä', 'kymmenen'),
         ('kymmeniä', 'kymmenen'),
         ('kymmenes', 'kymmenen'),
         ('tuhannen', 'tuhat'),
