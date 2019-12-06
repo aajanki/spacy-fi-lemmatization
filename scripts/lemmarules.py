@@ -1,6 +1,7 @@
 import json
 import re
 import voikkoinfl
+import voikkoutils
 import plac
 from collections import OrderedDict
 from itertools import takewhile
@@ -49,6 +50,10 @@ def expand(inflection_type, rule):
         if del_suffix == '':
             common = match_letters
         else:
+            # special case: gradation in the suffix
+            if match_letters == 'mpi' and rule.gradation == voikkoutils.GRAD_WEAK:
+                match_letters = 'mmi'
+
             i = sum(1 for _ in takewhile(
                 lambda x: x[0] == x[1],
                 zip(

@@ -71,6 +71,8 @@ testcases = {
         ('leipä', 'leipä'),
         ('työlupa', 'työlupa'),
         ('työlupakaan', 'työlupa'),
+        ('vanhemmaksi', 'vanhempi'),
+        ('vanhempana', 'vanhempi'),
 
         # gradation test cases
         # av1
