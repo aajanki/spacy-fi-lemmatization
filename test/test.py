@@ -2,9 +2,7 @@ from fi.lemmatizer import create_lemmatizer
 from itertools import chain
 
 
-def check(cases):
-    lemmatizer = create_lemmatizer()
-
+def check(lemmatizer, cases):
     expanded = list(chain.from_iterable(
         [(word, lemma, pos) for word, lemma in words]
         for pos, words in cases.items()
@@ -175,7 +173,8 @@ testcases = {
     # ],
 }
 
-failed_prop = check(testcases)
+lemmatizer = create_lemmatizer()
+failed_prop = check(lemmatizer, testcases)
 
 if failed_prop > 0:
     print(f'Failed: {failed_prop*100:.1f} % ')

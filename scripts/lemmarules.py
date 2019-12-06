@@ -3,6 +3,7 @@ import re
 import voikkoinfl
 import plac
 from collections import OrderedDict
+from itertools import takewhile
 
 
 @plac.annotations(
@@ -16,6 +17,9 @@ def main(noun_affix_file, verb_affix_file, output):
         ('verb', rules_from_affix_file(verb_affix_file)),
     ])
 
+    for pos, rs in rules.items():
+        print(f'{len(rs)} {pos} rules')
+
     with open(output, 'w', encoding='utf-8') as fp:
         json.dump(rules, fp=fp, indent=2, ensure_ascii=False)
 
@@ -24,7 +28,7 @@ def rules_from_affix_file(affix_file):
     rulelist = []
     for t in voikkoinfl.readInflectionTypes(affix_file):
         # irregular words handled as exceptions
-        if t.matchWord not in ['poika', 'mies', '[vm]eri', 'tuntea']:
+        if t.matchWord not in ['poika', 'mies', '[vm]eri', 'tuntea', 'lähteä']:
             for rule in t.inflectionRules:
                 for old, new in expand(t, rule):
                     rulelist.append((old, new))
@@ -33,9 +37,31 @@ def rules_from_affix_file(affix_file):
     return rulelist
 
 
-
 def expand(inflection_type, rule):
-    for remove, add, _ in voikkoinfl.__regex_to_hunspell(rule.delSuffix, rule.addSuffix):
+    match_letters_m = re.search('[a-zäö]+$', inflection_type.matchWord)
+    match_letters = match_letters_m.group() if match_letters_m else ''
+
+    del_suffix = rule.delSuffix
+    add_suffix = rule.addSuffix
+    if match_letters:
+        assert inflection_type.rmsfx == '', 'TODO: rmsfx + matchWord'
+
+        if del_suffix == '':
+            common = match_letters
+        else:
+            i = sum(1 for _ in takewhile(
+                lambda x: x[0] == x[1],
+                zip(
+                    reversed(match_letters),
+                    reversed(del_suffix)
+                )
+            ))
+            common = match_letters[:-i]
+
+        del_suffix = common + del_suffix
+        add_suffix = common + add_suffix
+
+    for remove, add, _ in voikkoinfl.__regex_to_hunspell(del_suffix, add_suffix):
         if remove == '0':
             remove = ''
         if add == '0':
@@ -59,12 +85,11 @@ def expand(inflection_type, rule):
 
 def expand_pattern(pattern):
     expand_capital = {
-        'C': ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q',
-              'r', 's', 't', 'v', 'w', 'x', 'z', 'š', 'ž'],
-        'V': ['a', 'e', 'i', 'o', 'u', 'y', 'ä', 'ö', 'é', 'è', 'á', 'ó', 'â'],
-        'A': ['a', 'ä'],
-        'O': ['o', 'ö'],
-        'U': ['u', 'y'],
+        'C': 'bcdfghjklmnpqrstvwxzšž',
+        'V': 'aeiouyäöéèáóâ',
+        'A': 'aä',
+        'O': 'oö',
+        'U': 'uy',
     }
 
     capitals = '[' + ''.join(expand_capital.keys()) + ']'
