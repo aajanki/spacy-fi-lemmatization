@@ -18,6 +18,7 @@ root = etree.parse(sys.stdin)
 for wclass, upos in tags.items():
     forms = root.xpath(f"/wordlist/word[./classes/wclass = '{wclass}']/forms/form/text()")
     forms = (w.replace('=', '') for w in forms)
+    forms = (w.rsplit('-', 1)[-1] for w in forms)
     index.setdefault(upos, []).extend(forms)
 
 index = {upos: sorted(forms) for upos, forms in index.items()}

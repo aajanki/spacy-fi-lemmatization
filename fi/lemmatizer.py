@@ -162,6 +162,15 @@ class FinnishLemmatizer(Lemmatizer):
         return lemmas
 
     def lemmatize(self, string, index, exceptions, rules, possessive_suffix_rules, reverse_gradation):
+        parts = string.rsplit("-", 1)
+        lemmas = self._lemmatize_one_word(parts[-1], index, exceptions, rules, possessive_suffix_rules, reverse_gradation)
+
+        if len(parts) == 1:
+            return lemmas
+        else:
+            return ["{}-{}".format(parts[0], x) for x in lemmas]
+
+    def _lemmatize_one_word(self, string, index, exceptions, rules, possessive_suffix_rules, reverse_gradation):
         orig = string
         string = string.lower()
 
