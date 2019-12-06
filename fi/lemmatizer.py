@@ -133,18 +133,25 @@ class FinnishLemmatizer(Lemmatizer):
         """
         if univ_pos in (NOUN, "NOUN", "noun"):
             univ_pos = "noun"
+            rules_class = univ_pos
         elif univ_pos in (VERB, "VERB", "verb"):
             univ_pos = "verb"
+            rules_class = univ_pos
         elif univ_pos in (ADJ, "ADJ", "adj"):
             univ_pos = "adj"
+            rules_class = univ_pos
         elif univ_pos in (ADV, "ADV", "adv"):
             univ_pos = "adv"
+            rules_class = univ_pos
         elif univ_pos in (NUM, "NUM", "num"):
             univ_pos = "num"
+            rules_class = univ_pos
         elif univ_pos in (PUNCT, "PUNCT", "punct"):
             univ_pos = "punct"
-        elif univ_pos in (PROPN, "PROPN"):
-            return [string]
+            rules_class = univ_pos
+        elif univ_pos in (PROPN, "PROPN", "propn"):
+            univ_pos = "propn"
+            rules_class = "noun"
         else:
             return [string.lower()]
 
@@ -155,9 +162,9 @@ class FinnishLemmatizer(Lemmatizer):
             string,
             index_table.get(univ_pos, {}),
             exc_table.get(univ_pos, {}),
-            rules_table.get(univ_pos, []),
-            possessive_suffix_rules.get(univ_pos, []),
-            gradation_reversal.get(univ_pos, lambda x: []),
+            rules_table.get(rules_class, []),
+            possessive_suffix_rules.get(rules_class, []),
+            gradation_reversal.get(rules_class, lambda x: []),
         )
         return lemmas
 
@@ -217,7 +224,6 @@ class FinnishLemmatizer(Lemmatizer):
         if not forms:
             forms.append(orig)
         return forms
-
 
 
 def create_lemmatizer():

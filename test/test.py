@@ -13,7 +13,7 @@ def check(cases):
     errors = 0
     for (word, lemma, univ_pos) in expanded:
         observed = lemmatizer(word, univ_pos)[0]
-        if observed != lemma:
+        if observed.lower() != lemma.lower():
             errors += 1
             print(f'{word} ({univ_pos}): {observed} != {lemma}')
 
@@ -141,6 +141,8 @@ testcases = {
     'propn': [
         ('Etelä-Afrikassa', 'Etelä-Afrikka'),
         ('Hangossa', 'Hanko'),
+        ('Belgiakin', 'Belgia'),
+        ('Tampereeltamme', 'Tampere'),
         ('Annan', 'Anna'),
     ],
 

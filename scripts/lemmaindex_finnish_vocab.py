@@ -3,35 +3,54 @@ import sys
 from voikko import libvoikko
 
 
-voikko = libvoikko.Voikko('fi')
+def main():
+    voikko = libvoikko.Voikko('fi')
 
-noun_index = set()
-for line in sys.stdin:
-    _, word = line.strip().split(' ', 1)
-    analyses = (
-        x for x in voikko.analyze(word)
-        if x.get('CLASS') == 'nimisana' and
-        x.get('SIJAMUOTO') == 'nimento' and
-        x.get('NUMBER') == 'singular'
-    )
+    noun_index = set()
+    propn_index = set()
+    for line in sys.stdin:
+        _, word = line.strip().split(' ', 1)
+        analyses = [
+            x for x in voikko.analyze(word)
+            if (is_noun(x) and valid_noun(x)) or is_propn(x)
+        ]
 
+        if analyses:
+            idx = propn_index if is_propn(analyses[0]) else noun_index
+            baseform = (analyses[0].get('BASEFORM')
+                        .rsplit('-', 1)[-1]
+                        .lower())
+            if baseform:
+                idx.add(baseform)
+
+    noun_index = sorted(noun_index)
+    propn_index = sorted(propn_index)
+
+    index = {
+        'noun': noun_index,
+        'propn': propn_index,
+    }
+
+    json.dump(index, fp=sys.stdout, indent=2, ensure_ascii=False)
+
+
+def is_noun(analysis):
+    return (analysis.get('CLASS') == 'nimisana' and
+            analysis.get('SIJAMUOTO') == 'nimento' and
+            analysis.get('NUMBER') == 'singular')
+
+
+def valid_noun(analysis):
     # Ignore forms like aurinkoamme, avioliittoamme
-    analyses = [
-        a for a in analyses
-        if (not a.get('BASEFORM').endswith('mme')
-            or (a.get('BASEFORM') in ['amme', 'lumme']))
-    ]
+    return (not analysis.get('BASEFORM').endswith('mme')
+            or (analysis.get('BASEFORM') in ['amme', 'lumme']))
 
-    if analyses:
-        baseform = (analyses[0].get('BASEFORM')
-                    .rsplit('-', 1)[-1]
-                    .lower())
-        noun_index.add(baseform)
 
-noun_index = sorted(noun_index)
+def is_propn(analysis):
+    return (analysis.get('CLASS') in ['etunimi', 'sukunimi', 'paikannimi'] and
+            analysis.get('SIJAMUOTO') == 'nimento' and
+            analysis.get('NUMBER') == 'singular')
 
-index = {
-    'noun': noun_index
-}
 
-json.dump(index, fp=sys.stdout, indent=2, ensure_ascii=False)
+if __name__ == '__main__':
+    main()
