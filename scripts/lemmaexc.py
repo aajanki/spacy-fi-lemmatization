@@ -3,6 +3,15 @@ import sys
 from itertools import chain
 
 
+def expand(exc):
+    return {
+        form: [lemma] for lemma, form in chain.from_iterable(
+            [(lemma, form) for form in forms]
+            for lemma, forms in exc.items()
+        )
+    }
+
+
 verb_exc_data = {
     'ei': ['en', 'et', 'ei', 'emme', 'ette', 'eivät'],
     'olla': [
@@ -10,14 +19,40 @@ verb_exc_data = {
         'olin', 'olit', 'oli', 'olimme', 'olitte', 'olivat',
         'ollut', 'olleet',
         'lienen', 'lienet', 'lienee', 'lienemme', 'lienette', 'lienevät'
-    ]
+    ],
+    'tuntea': [
+        'tunnen', 'tunsi', 'tuntisi', 'tuntekoon', 'tuntenut', 'tunnettiin'
+    ],
+    'lähteä': [
+        'lähden', 'lähti', 'lähtisi', 'lähteköön', 'lähtenyt', 'lähdettiin'
+    ],
 }
 
-verb_exceptions = {
-    form: [lemma] for lemma, form in chain.from_iterable(
-        [(lemma, form) for form in forms]
-        for lemma, forms in verb_exc_data.items()
-    )
+noun_exc_data = {
+    'poika': [
+        'pojan', 'poikaa', 'pojiksi', 'poikana', 'pojissa', 'pojista',
+        'poikaan', 'pojilla', 'pojilta', 'pojille', 'pojitta', 'pojat',
+        'poikien', 'oikia', 'pojiksi', 'poikina', 'pojissa', 'pojista',
+        'poikiin', 'pojilla', 'pojilta', 'pojille', 'pojitta', 'pojin'
+    ],
+    'mies': [
+        'miehen', 'miestä', 'mieheksi', 'miehenä', 'miehessä', 'miehestä',
+        'mieheen', 'miehellä', 'mieheltä', 'miehelle', 'miehettä', 'miehet',
+        'miesten', 'miehiä', 'miehiksi', 'miehinä', 'miehissä', 'miehistä',
+        'miehiin', 'miehillä', 'miehiltä', 'miehille', 'miehittä', 'miehin'
+    ],
+    'meri': [
+        'meren', 'merta', 'mereksi', 'merenä', 'meressä', 'merestä', 'mereen',
+        'merellä', 'mereltä', 'merelle', 'merettä', 'meret', 'merien', 'meriä',
+        'meriksi', 'merinä', 'merissä', 'meristä', 'meriin', 'merillä',
+        'meriltä', 'merille', 'merittä', 'merin'
+    ],
+    'veri': [
+        'veren', 'verta', 'vereksi', 'verenä', 'veressä', 'verestä', 'vereen',
+        'verellä', 'vereltä', 'verelle', 'verettä', 'veret', 'verien', 'veriä',
+        'veriksi', 'verinä', 'verissä', 'veristä', 'veriin', 'verillä',
+        'veriltä', 'verille', 'verittä', 'verin'
+    ],
 }
 
 num_exc_data = {
@@ -45,17 +80,12 @@ num_exc_data = {
     'miljoona': ['miljoonas', 'miljoonan', 'miljoonaa', 'miljoonaan'],
 }
 
-num_exceptions = {
-    form: [lemma] for lemma, form in chain.from_iterable(
-        [(lemma, form) for form in forms]
-        for lemma, forms in num_exc_data.items()
-    )
-}
-
-
 exc = {
-    'verb': verb_exceptions,
-    'num': num_exceptions,
+    'verb': expand(verb_exc_data),
+    'noun': expand(noun_exc_data),
+    'num': expand(num_exc_data),
 }
 
-json.dump(exc, fp=sys.stdout, indent=2, ensure_ascii=False)
+
+if __name__ == '__main__':
+    json.dump(exc, fp=sys.stdout, indent=2, ensure_ascii=False)

@@ -23,9 +23,11 @@ def main(noun_affix_file, verb_affix_file, output):
 def rules_from_affix_file(affix_file):
     rulelist = []
     for t in voikkoinfl.readInflectionTypes(affix_file):
-        for rule in t.inflectionRules:
-            for old, new in expand(t, rule):
-                rulelist.append((old, new))
+        # irregular words handled as exceptions
+        if t.matchWord not in ['poika', 'mies', '[vm]eri', 'tuntea']:
+            for rule in t.inflectionRules:
+                for old, new in expand(t, rule):
+                    rulelist.append((old, new))
 
     rulelist = list(OrderedDict.fromkeys(rulelist))
     return rulelist
