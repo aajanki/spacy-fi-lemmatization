@@ -207,23 +207,20 @@ def combine_rules(rules1, rules2, vowel_match=False):
         r1 = rules1.get(pos, [])
         r2 = rules2.get(pos, [])
 
-        if not r1:
-            combined[pos] = copy.copy(r2)
-        else:
-            rulelist = copy.copy(r1) + copy.copy(r2)
-            for old1, new1 in r1:
-                for old2, new2 in r2:
-                    if vowel_harmony(old1, old2):
-                        if new1 == '':
-                            a, b = make_compatible(old2, old1, vowel_match)
-                            if a is not None and b is not None:
-                                rulelist.append((a + b, new2))
-                        elif old2.endswith(new1):
-                            a, b = make_compatible(old2[:-len(new1)], old1, vowel_match)
-                            if a is not None and b is not None:
-                                rulelist.append((a + b, new2))
+        rulelist = copy.copy(r1) + copy.copy(r2)
+        for old1, new1 in r1:
+            for old2, new2 in r2:
+                if vowel_harmony(old1, old2):
+                    if new1 == '':
+                        a, b = make_compatible(old2, old1, vowel_match)
+                        if a is not None and b is not None:
+                            rulelist.append((a + b, new2))
+                    elif old2.endswith(new1):
+                        a, b = make_compatible(old2[:-len(new1)], old1, vowel_match)
+                        if a is not None and b is not None:
+                            rulelist.append((a + b, new2))
 
-            combined[pos] = list(OrderedDict.fromkeys(rulelist))
+        combined[pos] = list(OrderedDict.fromkeys(rulelist))
 
     return combined
 
@@ -291,26 +288,21 @@ def possessive_suffix_rules():
     return {
         'noun': [
             ('ni', ''),
-            ('ni', 'n'),
             ('kseni', 'ksi'),
             ('si', ''),
-            ('si', 'n'),
             ('ksesi', 'ksi'),
             ('mme', ''),
-            ('mme', 'n'),
             ('ksemme', 'ksi'),
             ('nne', ''),
-            ('nne', 'n'),
             ('ksenne', 'ksi'),
             ('nsa', ''),
-            ('nsa', 'n'),
             ('ksensa', 'ksi'),
-            ('an', ''),
-            ('en', ''),
-            ('in', ''),
-            ('on', ''),
-            ('un', ''),
-            ('yn', ''),
+            ('aan', 'a'),
+            ('een', 'e'),
+            ('iin', 'i'),
+            ('oon', 'o'),
+            ('uun', 'u'),
+            ('yyn', 'y'),
         ]
     }
 
