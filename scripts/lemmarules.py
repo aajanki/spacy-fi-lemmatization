@@ -66,7 +66,7 @@ def verb_rules(affix_file):
                     assert suffix.endswith('n')
 
                     third_person = []
-                    if len(suffix) >= 2 and suffix[-2] in 'aeiouyäöéèáóâ':
+                    if len(suffix) >= 2 and is_vowel(suffix[-2]):
                         third_person = [suffix[:-1] + suffix[-2]]
                     elif len(t.rmsfx) == 0:
                         x = t.matchWord[-1]
@@ -216,14 +216,21 @@ def combine_rules(rules1, rules2, vowel_match=False):
                     if vowel_harmony(old1, old2):
                         if new1 == '':
                             if not vowel_match or vowel_compatible(old2, old1):
+                                if old1 and old2 and old2[-1] == 'n' and old1[0] == 'm':
+                                    old2 = old2[:-1]
+
                                 rulelist.append((old2 + old1, new2))
                         elif old2.endswith(new1):
                             a = old2[:-len(new1)]
                             b = old1
+
                             if not vowel_match or vowel_compatible(a, b):
+                                if a and b and a[-1] == 'n' and b[0] == 'm':
+                                    a = a[:-1]
+
                                 rulelist.append((a + b, new2))
 
-            combined[pos] = rulelist
+            combined[pos] = list(OrderedDict.fromkeys(rulelist))
 
     return combined
 
@@ -238,7 +245,7 @@ def vowel_compatible(a, b):
 
 
 def is_vowel(x):
-    return x in 'aeiouyäöå'
+    return x in 'aeiouyäöåéèáóâ'
 
 
 def enclitics_rules():
