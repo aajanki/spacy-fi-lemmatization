@@ -128,7 +128,7 @@ class FinnishLemmatizer(Lemmatizer):
             rules_class = univ_pos
         elif univ_pos in (ADJ, "ADJ", "adj"):
             univ_pos = "adj"
-            rules_class = univ_pos
+            rules_class = "noun"
         elif univ_pos in (ADV, "ADV", "adv"):
             univ_pos = "adv"
             rules_class = univ_pos

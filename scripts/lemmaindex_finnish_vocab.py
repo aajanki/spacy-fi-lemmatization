@@ -6,30 +6,28 @@ from voikko import libvoikko
 def main():
     voikko = libvoikko.Voikko('fi')
 
+    adj_index = set()
     noun_index = set()
     propn_index = set()
     for line in sys.stdin:
         _, word = line.strip().split(' ', 1)
-        analyses = [
-            x for x in voikko.analyze(word)
-            if (is_noun(x) and valid_noun(x)) or is_propn(x)
-        ]
-
-        if analyses:
-            idx = propn_index if is_propn(analyses[0]) else noun_index
-            baseform = (analyses[0].get('BASEFORM')
+        for analysis in voikko.analyze(word):
+            baseform = (analysis.get('BASEFORM')
                         .rsplit('-', 1)[-1]
                         .lower())
-            if baseform:
-                idx.add(baseform)
 
-    noun_index = sorted(noun_index)
-    propn_index = sorted(propn_index)
+            if is_noun(analysis) and valid_noun(analysis):
+                noun_index.add(baseform)
+            elif is_propn(analysis):
+                propn_index.add(baseform)
+            elif is_adj(analysis):
+                adj_index.add(baseform)
 
     index = {
-        'noun': noun_index,
+        'adj': sorted(adj_index),
+        'noun': sorted(noun_index),
         'num': num_words(),
-        'propn': propn_index,
+        'propn': sorted(propn_index),
     }
 
     json.dump(index, fp=sys.stdout, indent=2, ensure_ascii=False)
@@ -59,6 +57,13 @@ def is_propn(analysis):
     return (analysis.get('CLASS') in ['etunimi', 'sukunimi', 'paikannimi'] and
             analysis.get('SIJAMUOTO') == 'nimento' and
             analysis.get('NUMBER') == 'singular')
+
+
+def is_adj(analysis):
+    return (analysis.get('CLASS') in ['laatusana', 'nimisana_laatusana'] and
+            analysis.get('SIJAMUOTO') == 'nimento' and
+            analysis.get('NUMBER') == 'singular' and
+            analysis.get('COMPARISON') == 'positive')
 
 
 def num_words():

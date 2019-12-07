@@ -181,10 +181,25 @@ testcases = {
     ],
 
     'adj': [
+        ('lämmin', ['lämmin']),
+        ('mielenkiintoinen', ['mielenkiintoinen']),
         ('normaaliin', ['normaali']),
         ('kimpaantunut', ['kimpaantunut']),
-        ('lämmin', ['lämmin']),
         ('maalaamatontakin', ['maalaamaton']),
+        ('kultaiset', ['kultainen']),
+        ('punaisten', ['punainen']),
+        ('sujuvilla', ['sujuva']),
+        ('ranskalaisemme', ['ranskalainen']),
+
+        # komparatiivi
+        ('lämpimämpi', ['lämmin']),
+        ('surullisempi', ['surullinen']),
+        ('voimakkaampi', ['voimakas']),
+
+        # superlatiivi
+        ('lämpimin', ['lämmin']),
+        ('kaunein', ['kaunis']),
+        ('nopein', ['nopea']),
     ],
 
     'propn': [
