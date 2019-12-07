@@ -142,6 +142,7 @@ testcases = {
         ('tuli', ['tulla']),
         ('pinositte', ['pinota']),
         ('valaistuivat', ['valaistua']),
+        ('jäi', ['jäädä']),
 
         # conditional
         ('hakisi', ['hakea']),

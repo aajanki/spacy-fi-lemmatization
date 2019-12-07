@@ -139,6 +139,7 @@ def expand(inflection_type, del_suffix, add_suffix, gradation):
             add = ''
         remove = remove.strip("'")
         remove = remove + inflection_type.rmsfx
+        remove = remove.replace('ä', 'a').replace('ö', 'o')
         add = add.strip("'")
 
         if remove or add:
