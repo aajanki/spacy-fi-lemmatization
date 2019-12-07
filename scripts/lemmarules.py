@@ -215,24 +215,26 @@ def combine_rules(rules1, rules2, vowel_match=False):
                 for old2, new2 in r2:
                     if vowel_harmony(old1, old2):
                         if new1 == '':
-                            if not vowel_match or vowel_compatible(old2, old1):
-                                if old1 and old2 and old2[-1] == 'n' and old1[0] == 'm':
-                                    old2 = old2[:-1]
-
-                                rulelist.append((old2 + old1, new2))
+                            a, b = make_compatible(old2, old1, vowel_match)
+                            if a is not None and b is not None:
+                                rulelist.append((a + b, new2))
                         elif old2.endswith(new1):
-                            a = old2[:-len(new1)]
-                            b = old1
-
-                            if not vowel_match or vowel_compatible(a, b):
-                                if a and b and a[-1] == 'n' and b[0] == 'm':
-                                    a = a[:-1]
-
+                            a, b = make_compatible(old2[:-len(new1)], old1, vowel_match)
+                            if a is not None and b is not None:
                                 rulelist.append((a + b, new2))
 
             combined[pos] = list(OrderedDict.fromkeys(rulelist))
 
     return combined
+
+
+def make_compatible(a, b, vowel_match):
+    if vowel_match and not vowel_compatible(a, b):
+        return (None, None)
+    elif a and b and a[-1] == 'n' and b[0] in 'mn':
+        return (a[:-1], b)
+    else:
+        return (a, b)
 
 
 def vowel_compatible(a, b):
