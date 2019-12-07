@@ -36,9 +36,17 @@ def main():
 
 
 def is_noun(analysis):
-    return (analysis.get('CLASS') == 'nimisana' and
-            analysis.get('SIJAMUOTO') == 'nimento' and
-            analysis.get('NUMBER') == 'singular')
+    basic_noun = (
+        analysis.get('CLASS') == 'nimisana' and
+        analysis.get('SIJAMUOTO') == 'nimento' and
+        analysis.get('NUMBER') == 'singular')
+    # minen_noun = (
+    #     analysis.get('CLASS') == 'teonsana' and
+    #     analysis.get('MOOD') == 'MINEN-infinitive' and
+    #     analysis.get('SIJAMUOTO') == 'nimento' and
+    #     analysis.get('NUMBER') == 'singular')
+
+    return basic_noun
 
 
 def valid_noun(analysis):

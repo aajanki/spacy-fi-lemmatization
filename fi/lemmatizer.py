@@ -129,32 +129,34 @@ class FinnishLemmatizer(Lemmatizer):
         index_table = self.lookups.get_table("lemma_index", {})
         exc_table = self.lookups.get_table("lemma_exc", {})
         rules_table = self.lookups.get_table("lemma_rules", {})
+        valid_lemma = self._valid_noun_lemma if univ_pos == "noun" else self._valid_index_lemma
         lemmas = self.lemmatize(
             string,
             index_table.get(univ_pos, {}),
             exc_table.get(univ_pos, {}),
             rules_table.get(rules_class, []),
             gradation_reversal.get(rules_class, lambda x: []),
+            valid_lemma,
         )
         return lemmas
 
-    def lemmatize(self, string, index, exceptions, rules, reverse_gradation):
+    def lemmatize(self, string, index, exceptions, rules, reverse_gradation, valid_lemma):
         parts = string.rsplit("-", 1)
-        lemmas = self._lemmatize_one_word(parts[-1], index, exceptions, rules, reverse_gradation)
+        lemmas = self._lemmatize_one_word(parts[-1], index, exceptions, rules, reverse_gradation, valid_lemma)
 
         if len(parts) == 1:
             return lemmas
         else:
             return ["{}-{}".format(parts[0], x) for x in lemmas]
 
-    def _lemmatize_one_word(self, string, index, exceptions, rules, reverse_gradation):
+    def _lemmatize_one_word(self, string, index, exceptions, rules, reverse_gradation, valid_lemma):
         orig = string
         string = string.lower()
 
         oov_forms = []
         enclitic_forms = self._remove_enclitics(string)
         for s in enclitic_forms:
-            if s in index:
+            if valid_lemma(s, index):
                 return [s]
             else:
                 oov_forms.append(s)
@@ -165,7 +167,7 @@ class FinnishLemmatizer(Lemmatizer):
                 if s.endswith(old):
                     rule_result = s[: len(s) - len(old)] + new
                     for form in reverse_gradation(rule_result) + [rule_result]:
-                        if form and (form in index or not form.isalpha()):
+                        if valid_lemma(form, index):
                             forms.append(form)
 
                     if new == '':
@@ -193,6 +195,15 @@ class FinnishLemmatizer(Lemmatizer):
             return [form, string]
         else:
             return [string]
+
+    def _valid_index_lemma(self, string, index):
+        return string and (string in index or not string.isalpha())
+
+    def _valid_noun_lemma(self, string, index):
+        # Either lemma in index or a -minen infinitive
+        return string and (string in index or
+                           string.endswith('minen') or
+                           not string.isalpha())
 
 
 def create_lemmatizer():
