@@ -172,10 +172,10 @@ def vowel_harmony_type(word):
 def expand_pattern(pattern):
     expand_capital = {
         'C': 'bcdfghjklmnpqrstvwxzšž',
-        'V': 'aeiouyäöéèáóâ',
-        'A': 'aä',
-        'O': 'oö',
-        'U': 'uy',
+        'V': 'aeiou',
+        'A': 'a',
+        'O': 'o',
+        'U': 'u',
     }
 
     capitals = '[' + ''.join(expand_capital.keys()) + ']'
