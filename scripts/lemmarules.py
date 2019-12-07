@@ -68,13 +68,22 @@ def verb_rules(affix_file):
                     third_person = []
                     if len(suffix) >= 2 and suffix[-2] in 'aeiouyäöéèáóâ':
                         third_person = [suffix[:-1] + suffix[-2]]
-                    elif len(t.rmsfx) == 0 and t.matchWord[-1] == 'A':
-                        third_person = ['a']
-                    elif len(t.matchWord) > len(t.rmsfx) and t.matchWord[:-len(t.rmsfx)][-1] == 'A':
-                        third_person = ['a']
+                    elif len(t.rmsfx) == 0:
+                        x = t.matchWord[-1]
+                        if x in 'aeiouA':
+                            third_person = [x.lower()]
+                        else:
+                            print(f'FIXME: {t.joukahainenClasses[0]} third person')
+                    elif len(t.matchWord) > len(t.rmsfx):
+                        x = t.matchWord[:-len(t.rmsfx)][-1]
+                        if x in 'aeiouA':
+                            third_person = [x.lower()]
+                        elif x == 'V':
+                            third_person = ['e', 'i', 'o', 'u']
+                        else:
+                            print(f'FIXME: {t.joukahainenClasses[0]} third person')
                     else:
-                        # FIXME: duplicate the last letter of the base form
-                        third_person = []
+                        print(f'FIXME: {t.joukahainenClasses[0]} third person')
 
                     add_suffixes = [
                         suffix, suffix[:-1] + 't',
