@@ -276,17 +276,12 @@ def possessive_suffix_rules():
             ('nsa', ''),
             ('nsa', 'n'),
             ('ksensa', 'ksi'),
-            ('nsä', ''),
-            ('nsä', 'n'),
-            ('ksensä', 'ksi'),
             ('an', ''),
             ('en', ''),
             ('in', ''),
             ('on', ''),
             ('un', ''),
             ('yn', ''),
-            ('än', ''),
-            ('ön', ''),
         ]
     }
 
