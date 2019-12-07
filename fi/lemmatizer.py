@@ -181,7 +181,13 @@ class FinnishLemmatizer(Lemmatizer):
 
         forms = []
         for s in enclitic_forms:
+            vowel_conversion_needed = self._has_front_vowels(s)
+
             for old, new in rules:
+                if vowel_conversion_needed:
+                    old = self._convert_to_front_vowels(old)
+                    new = self._convert_to_front_vowels(new)
+
                 if s.endswith(old):
                     rule_result = s[: len(s) - len(old)] + new
                     for form in reverse_gradation(rule_result) + [rule_result]:
@@ -222,6 +228,12 @@ class FinnishLemmatizer(Lemmatizer):
         return string and (string in index or
                            string.endswith('minen') or
                            not string.isalpha())
+
+    def _has_front_vowels(self, string):
+        return any(x in "äöy" for x in string)
+
+    def _convert_to_front_vowels(self, string):
+        return string.replace("a", "ä").replace("o", "ö").replace("u", "y")
 
 
 def create_lemmatizer():

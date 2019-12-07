@@ -146,13 +146,6 @@ def expand(inflection_type, del_suffix, add_suffix, gradation):
                 if add != remove_literal:
                     yield (add, remove_literal)
 
-                remove_front_vow = voikkoinfl.__convert_tv_ev(remove_literal)
-                add_front_vow = voikkoinfl.__convert_tv_ev(add)
-                if ((remove_literal != remove_front_vow or add != add_front_vow) and
-                    (add_front_vow != remove_front_vow)
-                ):
-                    yield (add_front_vow, remove_front_vow)
-
 
 def vowel_harmony(word1, word2):
     harmony1 = vowel_harmony_type(word1)
