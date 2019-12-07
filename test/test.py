@@ -196,11 +196,15 @@ testcases = {
         ('lämpimämpi', ['lämmin']),
         ('surullisempi', ['surullinen']),
         ('voimakkaampi', ['voimakas']),
+        ('uudempi', ['uusi']),
+        ('parempi', ['hyvä']),
 
         # superlatiivi
         ('lämpimin', ['lämmin']),
         ('kaunein', ['kaunis']),
         ('nopein', ['nopea']),
+        ('lyhyin', ['lyhyt']),
+        ('paras', ['hyvä']),
     ],
 
     'propn': [

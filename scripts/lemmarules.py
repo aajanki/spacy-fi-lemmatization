@@ -16,7 +16,7 @@ from pathlib import Path
 )
 def main(noun_affix_file, verb_affix_file, destdir):
     inflection_rules = OrderedDict([
-        ('noun', rules_from_affix_file(noun_affix_file)),
+        ('noun', subst_rules(noun_affix_file)),
         ('verb', verb_rules(verb_affix_file)),
     ])
 
@@ -37,17 +37,31 @@ def main(noun_affix_file, verb_affix_file, destdir):
         json.dump(inflection_rules, fp=fp, indent=2, ensure_ascii=False)
 
 
-def rules_from_affix_file(affix_file):
+def subst_rules(affix_file):
     rulelist = []
     for t in voikkoinfl.readInflectionTypes(affix_file):
         # irregular words will be handled in the exceptions
-        if t.matchWord not in ['poika', 'mies', '[vm]eri', 'tuntea', 'lähteä']:
+        if t.matchWord not in ['poika', 'mies', '[vm]eri']:
             for rule in t.inflectionRules:
                 for old, new in expand(t, rule.delSuffix, rule.addSuffix, rule.gradation):
                     rulelist.append((old, new))
 
-    rulelist = list(OrderedDict.fromkeys(rulelist))
-    return rulelist
+    # FIXME: The following should be applied only to adjectives
+    # comparative
+    rulelist.append(('mpi', ''))
+    rulelist.append(('ampi', 's'))
+    rulelist.append(('ampi', 'n'))
+    rulelist.append(('mampi', 'n'))
+    rulelist.append(('sempi', 'nen'))
+    rulelist.append(('dempi', 'si'))
+    # superlative
+    rulelist.append(('in', 'a'))
+    rulelist.append(('in', 't'))
+    rulelist.append(('ein', 'a'))
+    rulelist.append(('ein', 'is'))
+    rulelist.append(('min', 'n'))
+
+    return list(OrderedDict.fromkeys(rulelist))
 
 
 def verb_rules(affix_file):

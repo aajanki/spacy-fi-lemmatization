@@ -80,7 +80,12 @@ num_exc_data = {
     'miljoona': ['miljoonas', 'miljoonan', 'miljoonaa', 'miljoonaan'],
 }
 
+adj_exc_data = {
+    'hyvä': ['parempi', 'paras']
+}
+
 exc = {
+    'adj': expand(adj_exc_data),
     'verb': expand(verb_exc_data),
     'noun': expand(noun_exc_data),
     'num': expand(num_exc_data),
