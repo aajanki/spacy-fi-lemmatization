@@ -24,7 +24,7 @@ def main(noun_affix_file, verb_affix_file, destdir):
     #     combine_rules(enclitics_rules(), possessive_suffix_rules()),
     #     inflection_rules
     # )
-    rules = combine_rules(possessive_suffix_rules(), inflection_rules)
+    rules = combine_rules(possessive_suffix_rules(), inflection_rules, vowel_match=True)
 
     for pos, rs in rules.items():
         print(f'{len(rs)} {pos} rules')
@@ -191,11 +191,14 @@ def expand_pattern(pattern):
         return [pattern]
 
 
-def combine_rules(rules1, rules2):
+def combine_rules(rules1, rules2, vowel_match=False):
     """Build a combined ruleset
 
     Either rules1 are applied alone, rules2 are applied alone or
     rules1 is applied followed by rules2.
+
+    If vowel_match is True, combine rules only if both have the same
+    vowel at the seam or one has a consonant.
     """
 
     keys = sorted(set(rules1.keys()) | set(rules2.keys()))
@@ -212,13 +215,30 @@ def combine_rules(rules1, rules2):
                 for old2, new2 in r2:
                     if vowel_harmony(old1, old2):
                         if new1 == '':
-                            rulelist.append((old2 + old1, new2))
+                            if not vowel_match or vowel_compatible(old2, old1):
+                                rulelist.append((old2 + old1, new2))
                         elif old2.endswith(new1):
-                            rulelist.append((old2[:-len(new1)] + old1, new2))
-                
+                            a = old2[:-len(new1)]
+                            b = old1
+                            if not vowel_match or vowel_compatible(a, b):
+                                rulelist.append((a + b, new2))
+
             combined[pos] = rulelist
 
     return combined
+
+
+def vowel_compatible(a, b):
+    if not a or not b:
+        return True
+    else:
+        return ((is_vowel(a[-1]) and (a[-1] == b[0])) or
+                not is_vowel(a[-1]) or
+                not is_vowel(b[0]))
+
+
+def is_vowel(x):
+    return x in 'aeiouyäöå'
 
 
 def enclitics_rules():
