@@ -151,41 +151,48 @@ class FinnishLemmatizer(Lemmatizer):
         orig = string
         string = string.lower()
 
-        if string in index:
-            return [string]
-
         oov_forms = []
-        string = _enclitics_re.sub('', string)
-        if string and string in index:
-            return [string]
-        else:
-            oov_forms.append(string)
+        enclitic_forms = self._remove_enclitics(string)
+        for s in enclitic_forms:
+            if s in index:
+                return [s]
+            else:
+                oov_forms.append(s)
 
         forms = []
-        for old, new in rules:
-            if string.endswith(old):
-                rule_result = string[: len(string) - len(old)] + new
-                for form in reverse_gradation(rule_result) + [rule_result]:
-                    if form and (form in index or not form.isalpha()):
-                        forms.append(form)
+        for s in enclitic_forms:
+            for old, new in rules:
+                if s.endswith(old):
+                    rule_result = s[: len(s) - len(old)] + new
+                    for form in reverse_gradation(rule_result) + [rule_result]:
+                        if form and (form in index or not form.isalpha()):
+                            forms.append(form)
 
-                if new == '':
-                    for exc in exceptions.get(rule_result, []):
-                        forms.insert(0, exc)
+                    if new == '':
+                        for exc in exceptions.get(rule_result, []):
+                            forms.insert(0, exc)
         # Remove duplicates but preserve the ordering of applied "rules"
         forms = list(OrderedDict.fromkeys(forms))
         # Put exceptions at the front of the list, so they get priority.
         # This is a dodgy heuristic -- but it's the best we can do until we get
         # frequencies on this. We can at least prune out problematic exceptions,
         # if they shadow more frequent analyses.
-        for form in exceptions.get(string, []):
-            if form not in forms:
-                forms.insert(0, form)
+        for form in enclitic_forms:
+            for exc in exceptions.get(form, []):
+                if exc not in forms:
+                    forms.insert(0, exc)
         if not forms:
             forms.extend(oov_forms)
         if not forms:
             forms.append(orig)
         return forms
+
+    def _remove_enclitics(self, string):
+        form = _enclitics_re.sub('', string)
+        if form and form != string:
+            return [form, string]
+        else:
+            return [string]
 
 
 def create_lemmatizer():
