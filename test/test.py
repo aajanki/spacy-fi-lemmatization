@@ -124,7 +124,7 @@ testcases = {
         ('tuli', 'tulla'),
         ('tulee', 'tulla'),
         ('pelastuimme', 'pelastua'),
-        ('hukkaan', 'hukkaan'),
+        ('hukkaan', 'hukata'),
 
         # gradation, av2
         ('lobbaan', 'lobata'),

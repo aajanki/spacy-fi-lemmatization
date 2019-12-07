@@ -28,6 +28,7 @@ def main():
 
     index = {
         'noun': noun_index,
+        'num': num_words(),
         'propn': propn_index,
     }
 
@@ -50,6 +51,44 @@ def is_propn(analysis):
     return (analysis.get('CLASS') in ['etunimi', 'sukunimi', 'paikannimi'] and
             analysis.get('SIJAMUOTO') == 'nimento' and
             analysis.get('NUMBER') == 'singular')
+
+
+def num_words():
+    return [
+        "nolla",
+        "yksi",
+        "kaksi",
+        "kolme",
+        "neljä",
+        "viisi",
+        "kuusi",
+        "seitsemän",
+        "kahdeksan",
+        "yhdeksän",
+        "kymmenen",
+        "yksitoista",
+        "kaksitoista",
+        "kolmetoista",
+        "neljätoista",
+        "viisitoista",
+        "kuusitoista",
+        "seitsemäntoista",
+        "kahdeksantoista",
+        "yhdeksäntoista",
+        "kaksikymmentä",
+        "kolmekymmentä",
+        "neljäkymmentä",
+        "viisikymmentä",
+        "kuusikymmentä",
+        "seitsemänkymmentä",
+        "kahdeksankymmentä",
+        "yhdeksänkymmentä",
+        "sata",
+        "tuhat",
+        "miljoona",
+        "miljardi",
+        "triljoona",
+    ]
 
 
 if __name__ == '__main__':

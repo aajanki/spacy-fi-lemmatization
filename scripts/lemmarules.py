@@ -1,3 +1,4 @@
+import copy
 import json
 import re
 import voikkoinfl
@@ -5,30 +6,40 @@ import voikkoutils
 import plac
 from collections import OrderedDict
 from itertools import takewhile
+from pathlib import Path
 
 
 @plac.annotations(
     noun_affix_file=('Path to the noun affix file', 'positional'),
     verb_affix_file=('Path to the verb affix file', 'positional'),
-    output=('Output file path', 'positional'),
+    destdir=('Output directory', 'positional', None, Path),
 )
-def main(noun_affix_file, verb_affix_file, output):
-    rules = OrderedDict([
+def main(noun_affix_file, verb_affix_file, destdir):
+    inflection_rules = OrderedDict([
         ('noun', rules_from_affix_file(noun_affix_file)),
         ('verb', rules_from_affix_file(verb_affix_file)),
     ])
 
+    rules = combine_rules(
+        combine_rules(enclitics_rules(), possessive_suffix_rules()),
+        inflection_rules
+    )
+
     for pos, rs in rules.items():
         print(f'{len(rs)} {pos} rules')
 
-    with open(output, 'w', encoding='utf-8') as fp:
+    with open(destdir / 'fi_lemma_rules.json', 'w', encoding='utf-8') as fp:
         json.dump(rules, fp=fp, indent=2, ensure_ascii=False)
+
+    # For debugging, won't be included in the final model
+    with open(destdir / 'inflection_rules.json', 'w', encoding='utf-8') as fp:
+        json.dump(inflection_rules, fp=fp, indent=2, ensure_ascii=False)
 
 
 def rules_from_affix_file(affix_file):
     rulelist = []
     for t in voikkoinfl.readInflectionTypes(affix_file):
-        # irregular words handled as exceptions
+        # irregular words will be handled in the exceptions
         if t.matchWord not in ['poika', 'mies', '[vm]eri', 'tuntea', 'lähteä']:
             for rule in t.inflectionRules:
                 for old, new in expand(t, rule):
@@ -88,6 +99,28 @@ def expand(inflection_type, rule):
                     yield (add_front_vow, remove_front_vow)
 
 
+def vowel_harmony(word1, word2):
+    harmony1 = vowel_harmony_type(word1)
+    harmony2 = vowel_harmony_type(word2)
+    return not ((harmony1 == 'back' and harmony2 == 'front') or
+                (harmony1 == 'front' and harmony2 == 'back'))
+
+
+def vowel_harmony_type(word):
+    back = 'aou'
+    front = 'äöy'
+
+    last_back = max(word.rfind(x) for x in back)
+    last_front = max(word.rfind(x) for x in front)
+
+    if last_back > last_front:
+        return 'back'
+    elif last_back < last_front:
+        return 'front'
+    else:
+        return 'indefinite'
+
+
 def expand_pattern(pattern):
     expand_capital = {
         'C': 'bcdfghjklmnpqrstvwxzšž',
@@ -108,6 +141,106 @@ def expand_pattern(pattern):
         ]
     else:
         return [pattern]
+
+
+def combine_rules(rules1, rules2):
+    """Build a combined ruleset
+
+    Either rules1 are applied alone, rules2 are applied alone or
+    rules1 is applied followed by rules2.
+    """
+
+    keys = sorted(set(rules1.keys()) | set(rules2.keys()))
+    combined = {}
+    for pos in keys:
+        r1 = rules1.get(pos, [])
+        r2 = rules2.get(pos, [])
+
+        if not r1:
+            combined[pos] = copy.copy(r2)
+        else:
+            rulelist = copy.copy(r1) + copy.copy(r2)
+            for old1, new1 in r1:
+                for old2, new2 in r2:
+                    if vowel_harmony(old1, old2):
+                        if new1 == '':
+                            rulelist.append((old2 + old1, new2))
+                        elif old2.endswith(new1):
+                            rulelist.append((old2[:-len(new1)] + old1, new2))
+                
+            combined[pos] = rulelist
+
+    return combined
+
+
+def enclitics_rules():
+    # http://scripta.kotus.fi/visk/sisallys.php?p=126
+
+    common_enclitics = [
+        ('ko', ''),
+        ('kö', ''),
+        ('han', ''),
+        ('hän', ''),
+        ('pa', ''),
+        ('pä', ''),
+        ('kaan', ''),
+        ('kään', ''),
+        ('kin', ''),
+
+        # The most common merged enclitics:
+        ('kohan', ''),
+        ('köhän', ''),
+        ('pahan', ''),
+        ('pähän', ''),
+        ('kaankohan', ''),
+        ('käänköhän', ''),
+    ]
+
+    # TODO: Enclitics with restricted uses: -kA on the negative verb,
+    # -s on interrogatives
+    return {
+        'adj': common_enclitics,
+        'adv': common_enclitics,
+        'noun': common_enclitics,
+        'num': common_enclitics,
+        'propn': common_enclitics,
+        'verb': common_enclitics,
+    }
+
+
+def possessive_suffix_rules():
+    # http://scripta.kotus.fi/visk/sisallys.php?p=95
+
+    return {
+        'noun': [
+            ('ni', ''),
+            ('ni', 'n'),
+            ('kseni', 'ksi'),
+            ('si', ''),
+            ('si', 'n'),
+            ('ksesi', 'ksi'),
+            ('mme', ''),
+            ('mme', 'n'),
+            ('ksemme', 'ksi'),
+            ('nne', ''),
+            ('nne', 'n'),
+            ('ksenne', 'ksi'),
+            ('nsa', ''),
+            ('nsa', 'n'),
+            ('ksensa', 'ksi'),
+            ('nsä', ''),
+            ('nsä', 'n'),
+            ('ksensä', 'ksi'),
+            ('an', ''),
+            ('en', ''),
+            ('in', ''),
+            ('on', ''),
+            ('un', ''),
+            ('yn', ''),
+            ('än', ''),
+            ('ön', ''),
+        ]
+    }
 
 
 if __name__ == '__main__':

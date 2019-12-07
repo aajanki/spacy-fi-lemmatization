@@ -10,49 +10,6 @@ from spacy.lookups import Lookups
 from spacy.symbols import NOUN, VERB, ADJ, PUNCT, PROPN, ADV, NUM
 
 
-# http://scripta.kotus.fi/visk/sisallys.php?p=126
-_enclitics = [
-    'ko', 'kö', 'han', 'hän', 'pa', 'pä', 'kaan', 'kään', 'kin',
-    # Most common merged enclitics:
-    'kohan', 'köhän', 'pahan', 'pähän', 'kaankohan', 'käänköhän'
-    # TODO: Enclitics with restricted uses: -kA on the negative verb,
-    # -s on interrogatives
-]
-_enclitics_re = re.compile('(?:' + '|'.join(_enclitics) + ')$')
-
-# http://scripta.kotus.fi/visk/sisallys.php?p=95
-# TODO: move to lookups
-possessive_suffix_rules = {
-    "noun": [
-        ["ni", ""],
-        ["ni", "n"],
-        ["kseni", "ksi"],
-        ["si", ""],
-        ["si", "n"],
-        ["ksesi", "ksi"],
-        ["mme", ""],
-        ["mme", "n"],
-        ["ksemme", "ksi"],
-        ["nne", ""],
-        ["nne", "n"],
-        ["ksenne", "ksi"],
-        ["nsa", ""],
-        ["nsa", "n"],
-        ["ksensa", "ksi"],
-        ["nsä", ""],
-        ["nsä", "n"],
-        ["ksensä", "ksi"],
-        ["an", ""],
-        ["en", ""],
-        ["in", ""],
-        ["on", ""],
-        ["un", ""],
-        ["yn", ""],
-        ["än", ""],
-        ["ön", ""],
-    ]
-}
-
 gradations = {
     "av1": {
         "mm": "mp",
@@ -109,7 +66,13 @@ def reverse_gradation_noun(word):
     for gname, gpat in gradation_patterns:
         m = gpat.match(word)
         if m:
-            forms.append(m.group(1) + gradations[gname][m.group(2)] + m.group(3))
+            prefix = m.group(1)
+            infix = gradations[gname][m.group(2)]
+            suffix = m.group(3)
+
+            if (not (prefix and infix and (prefix[-1] == infix[0])) and
+                not (infix and suffix and (infix[-1] == suffix[0]))):
+                forms.append(prefix + infix + suffix)
 
     if forms:
         return forms
@@ -163,53 +126,38 @@ class FinnishLemmatizer(Lemmatizer):
             index_table.get(univ_pos, {}),
             exc_table.get(univ_pos, {}),
             rules_table.get(rules_class, []),
-            possessive_suffix_rules.get(rules_class, []),
             gradation_reversal.get(rules_class, lambda x: []),
         )
         return lemmas
 
-    def lemmatize(self, string, index, exceptions, rules, possessive_suffix_rules, reverse_gradation):
+    def lemmatize(self, string, index, exceptions, rules, reverse_gradation):
         parts = string.rsplit("-", 1)
-        lemmas = self._lemmatize_one_word(parts[-1], index, exceptions, rules, possessive_suffix_rules, reverse_gradation)
+        lemmas = self._lemmatize_one_word(parts[-1], index, exceptions, rules, reverse_gradation)
 
         if len(parts) == 1:
             return lemmas
         else:
             return ["{}-{}".format(parts[0], x) for x in lemmas]
 
-    def _lemmatize_one_word(self, string, index, exceptions, rules, possessive_suffix_rules, reverse_gradation):
+    def _lemmatize_one_word(self, string, index, exceptions, rules, reverse_gradation):
         orig = string
         string = string.lower()
 
         if string in index:
             return [string]
-        
+
         forms = []
         oov_forms = []
-        string = _enclitics_re.sub('', string)
-        if len(string) > 2 and string in index:
-            return [string]
-        else:
-            oov_forms.append(string)
-
-        reduced_forms = [string]
-        for old, new in possessive_suffix_rules:
+        for old, new in rules:
             if string.endswith(old):
-                form = string[: len(string) - len(old)] + new
-                if not form:
-                    pass
-                elif form in index or not form.isalpha():
-                    return [form]
-                else:
-                    reduced_forms.append(form)
+                rule_result = string[: len(string) - len(old)] + new
+                for form in reverse_gradation(rule_result) + [rule_result]:
+                    if form and (form in index or not form.isalpha()):
+                        forms.append(form)
 
-        for s in reduced_forms:
-            for old, new in rules:
-                if s.endswith(old):
-                    rule_result = s[: len(s) - len(old)] + new
-                    for form in reverse_gradation(rule_result) + [rule_result]:
-                        if form and (form in index or not form.isalpha()):
-                            forms.append(form)
+                if new == '':
+                    for exc in exceptions.get(rule_result, []):
+                        forms.insert(0, exc)
         # Remove duplicates but preserve the ordering of applied "rules"
         forms = list(OrderedDict.fromkeys(forms))
         # Put exceptions at the front of the list, so they get priority.
