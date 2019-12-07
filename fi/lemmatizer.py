@@ -9,6 +9,8 @@ from spacy.lemmatizer import Lemmatizer
 from spacy.lookups import Lookups
 from spacy.symbols import NOUN, VERB, ADJ, PUNCT, PROPN, ADV, NUM
 
+
+# http://scripta.kotus.fi/visk/sisallys.php?p=126
 _enclitics = [
     'ko', 'kö', 'han', 'hän', 'pa', 'pä', 'kaan', 'kään', 'kin',
     # Most common merged enclitics:
@@ -42,6 +44,8 @@ gradations = {
         "lt": "ll",
         "rt": "rr",
         "nk": "ng",
+        "bb": "b",
+        "gg": "g",
         "p": "v",
         "t": "d",
     },
@@ -59,7 +63,7 @@ gradations = {
     }
 }
 
-gradation_patterns = [
+gradation_patterns_noun = [
     ("av1", re.compile(r"^(.+?)(uvu|yvy)()$")),
     ("av1", re.compile(r"^(.+?)(mm|nn|ll|rr|ng|t|p|k|v|d)([aeiouyäö][bcdfghjklmnpqrstvwxz]?)$")),
     ("av2", re.compile(r"^(.+?)(tt|pp|kk|mp|nt|lt|rt|nk|p|t)([aeiouyäö][bcdfghjklmnpqrstvwxz]?)$"),),
@@ -69,26 +73,40 @@ gradation_patterns = [
     ("av6", re.compile(r"^(.+?[aeiouyäö][aeiouyäö])(k)([aeiouyäö])$"))
 ]
 
-def reverse_gradation_noun(word):
-    forms = []
-    for gname, gpat in gradation_patterns:
-        m = gpat.match(word)
-        if m:
-            prefix = m.group(1)
-            infix = gradations[gname][m.group(2)]
-            suffix = m.group(3)
+gradation_patterns_verb = [
+    ("av1", re.compile(r"^(.+?)(mm|nn|ll|rr|ng|t|p|k|v|d)(.+?)$")),
+    ("av2", re.compile(r"^(.+?)(tt|pp|kk|mp|nt|lt|rt|nk|bb|gg|p|t)(.+?)$"),),
+    ("av3", re.compile(r"^(.+?)(j)([aeiouyäö].*?)$")),
+    ("av4", re.compile(r"^(.+?)(k)([aeiouyäö].*?)$")),
+    ("av5", re.compile(r"^(.+?[aeiouyäö])()([aeiouyäö].*?)$")),
+    ("av6", re.compile(r"^(.+?[aeiouyäö])(k)([aeiouyäö].*?)$"))
+]
 
-            if (not (prefix and infix and (prefix[-1] == infix[0])) and
-                not (infix and suffix and (infix[-1] == suffix[0]))):
-                forms.append(prefix + infix + suffix)
+def create_gradation_transformer(patterns):
+    def f(word):
+        forms = []
+        for gname, gpat in patterns:
+            m = gpat.match(word)
+            if m:
+                prefix = m.group(1)
+                infix = gradations[gname][m.group(2)]
+                suffix = m.group(3)
 
-    if forms:
-        return forms
-    else:
-        return [word]
+                if (not (prefix and infix and (prefix[-1] == infix[0])) and
+                    not (infix and suffix and (infix[-1] == suffix[0]))):
+                    forms.append(prefix + infix + suffix)
+
+        if forms:
+            return forms
+        else:
+            return [word]
+
+    return f
+
 
 gradation_reversal = {
-    "noun": reverse_gradation_noun
+    "noun": create_gradation_transformer(gradation_patterns_noun),
+    "verb": create_gradation_transformer(gradation_patterns_verb),
 }
 
 

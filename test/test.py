@@ -114,24 +114,66 @@ testcases = {
     ],
 
     'verb': [
+        # negation
         ('ei', ['ei']),
         ('en', ['ei']),
         ('emme', ['ei']),
         ('ettekö', ['ei']),
+
+        # olla
         ('oli', ['olla']),
         ('olitte', ['olla']),
-        ('raahaa', ['raahata']),
+
+        # person
         ('annan', ['antaa']),
+        ('hukkaan', ['hukata']),
+        ('lasket', ['laskea']),
+        ('raahaa', ['raahata']),
+        ('tulee', ['tulla']),
+        ('häviätte', ['hävitä']),
+        ('kitisevät', ['kitistä']),
+
+        # past tense
+        ('kelluit', ['kellua']),
+        ('tuli', ['tulla']),
+        ('pinositte', ['pinota']),
+        ('valaistuivat', ['valaistua']),
+
+        # conditional
+        ('hakisi', ['hakea']),
+        ('imartelisitte', ['imarrella']),
+        ('karmisi', ['karmia']),
+
+        # imperative
+        ('järisyttäköön', ['järisyttää']),
+        ('astukoon', ['astua']),
+
+        # A-infinitive
+        ('pelastua', ['pelastaa']),
+        ('pelastuimme', ['pelastaa']),
+
+        # NUT-participle
         ('kimpaantunut', ['kimpaantua']),
         ('pyytänyt', ['pyytää']),
-        ('tuli', ['tulla']),
-        ('tulee', ['tulla']),
-        ('pelastuimme', ['pelastua']),
-        ('hukkaan', ['hukata']),
 
-        # gradation, av2
-        ('lobbaan', ['lobata']),
-        ('diggaan', ['digata']),
+        # enclitics
+        ('pohdinko', ['pohtia']),
+        ('lähdettehän', ['lähteä']),
+
+        # gradation
+        #av1
+        ('ilkutte', ['ilkkua']),
+        # av2
+        ('lobbaatte', ['lobata']),
+        ('diggaavat', ['digata']),
+        # av3
+        ('hyljit', ['hylkiä']),
+        # av4
+        ('ilkeät', ['iljetä']),
+        # av5
+        ('aion', ['aikoa']),
+        # av6
+        ('aukeat', ['aueta']),
     ],
 
     'adj': [
@@ -143,7 +185,7 @@ testcases = {
 
     'propn': [
         ('Etelä-Afrikassa', ['Etelä-Afrikka']),
-        ('Hangossa', ['Hanko']),
+        ('Hangosta', ['Hanko']),
         ('Belgiakin', ['Belgia']),
         ('Tampereeltamme', ['Tampere']),
         ('Annan', ['Anna']),

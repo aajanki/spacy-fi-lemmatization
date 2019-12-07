@@ -17,7 +17,7 @@ from pathlib import Path
 def main(noun_affix_file, verb_affix_file, destdir):
     inflection_rules = OrderedDict([
         ('noun', rules_from_affix_file(noun_affix_file)),
-        ('verb', rules_from_affix_file(verb_affix_file)),
+        ('verb', verb_rules(verb_affix_file)),
     ])
 
     # rules = combine_rules(
@@ -43,19 +43,64 @@ def rules_from_affix_file(affix_file):
         # irregular words will be handled in the exceptions
         if t.matchWord not in ['poika', 'mies', '[vm]eri', 'tuntea', 'lähteä']:
             for rule in t.inflectionRules:
-                for old, new in expand(t, rule):
+                for old, new in expand(t, rule.delSuffix, rule.addSuffix, rule.gradation):
                     rulelist.append((old, new))
 
     rulelist = list(OrderedDict.fromkeys(rulelist))
     return rulelist
 
 
-def expand(inflection_type, rule):
+def verb_rules(affix_file):
+    rulelist = []
+    for t in voikkoinfl.readInflectionTypes(affix_file):
+        # irregular words will be handled in the exceptions
+        if t.matchWord not in ['tuntea', 'lähteä']:
+            for rule in t.inflectionRules:
+                # person inflections
+                if rule.name == 'infinitiivi_1':
+                    continue
+
+                if rule.name == 'preesens_yks_1':
+                    suffix = rule.addSuffix
+
+                    assert suffix.endswith('n')
+
+                    third_person = []
+                    if len(suffix) >= 2 and suffix[-2] in 'aeiouyäöéèáóâ':
+                        third_person = [suffix[:-1] + suffix[-2]]
+                    elif len(t.rmsfx) == 0 and t.matchWord[-1] == 'A':
+                        third_person = ['a']
+                    elif len(t.matchWord) > len(t.rmsfx) and t.matchWord[:-len(t.rmsfx)][-1] == 'A':
+                        third_person = ['a']
+                    else:
+                        # FIXME: duplicate the last letter of the base form
+                        third_person = []
+
+                    add_suffixes = [
+                        suffix, suffix[:-1] + 't',
+                        suffix[:-1] + 'mme', suffix[:-1] + 'tte', suffix[:-1] + 'vat'
+                    ] + third_person
+                elif rule.name in ['imperfekti_yks_3', 'kondit_yks_3']:
+                    suffix = rule.addSuffix
+                    add_suffixes = [
+                        suffix + 'n', suffix + 't', suffix,
+                        suffix + 'mme', suffix + 'tte', suffix + 'vat'
+                    ]
+                else:
+                    add_suffixes = [rule.addSuffix]
+
+                for add_suffix in add_suffixes:
+                    for old, new in expand(t, rule.delSuffix, add_suffix, rule.gradation):
+                        rulelist.append((old, new))
+
+    rulelist = list(OrderedDict.fromkeys(rulelist))
+    return rulelist
+
+
+def expand(inflection_type, del_suffix, add_suffix, gradation):
     match_letters_m = re.search('[a-zäö]+$', inflection_type.matchWord)
     match_letters = match_letters_m.group() if match_letters_m else ''
 
-    del_suffix = rule.delSuffix
-    add_suffix = rule.addSuffix
     if match_letters:
         assert inflection_type.rmsfx == '', 'TODO: rmsfx + matchWord'
 
@@ -63,7 +108,7 @@ def expand(inflection_type, rule):
             common = match_letters
         else:
             # special case: gradation in the suffix
-            if match_letters == 'mpi' and rule.gradation == voikkoutils.GRAD_WEAK:
+            if match_letters == 'mpi' and gradation == voikkoutils.GRAD_WEAK:
                 match_letters = 'mmi'
 
             i = sum(1 for _ in takewhile(
@@ -84,7 +129,7 @@ def expand(inflection_type, rule):
         if add == '0':
             add = ''
         remove = remove.strip("'")
-        remove = inflection_type.rmsfx + remove
+        remove = remove + inflection_type.rmsfx
         add = add.strip("'")
 
         if remove or add:
