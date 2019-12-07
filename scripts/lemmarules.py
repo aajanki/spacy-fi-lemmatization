@@ -20,10 +20,11 @@ def main(noun_affix_file, verb_affix_file, destdir):
         ('verb', rules_from_affix_file(verb_affix_file)),
     ])
 
-    rules = combine_rules(
-        combine_rules(enclitics_rules(), possessive_suffix_rules()),
-        inflection_rules
-    )
+    # rules = combine_rules(
+    #     combine_rules(enclitics_rules(), possessive_suffix_rules()),
+    #     inflection_rules
+    # )
+    rules = combine_rules(possessive_suffix_rules(), inflection_rules)
 
     for pos, rs in rules.items():
         print(f'{len(rs)} {pos} rules')

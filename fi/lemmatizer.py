@@ -9,6 +9,14 @@ from spacy.lemmatizer import Lemmatizer
 from spacy.lookups import Lookups
 from spacy.symbols import NOUN, VERB, ADJ, PUNCT, PROPN, ADV, NUM
 
+_enclitics = [
+    'ko', 'kö', 'han', 'hän', 'pa', 'pä', 'kaan', 'kään', 'kin',
+    # Most common merged enclitics:
+    'kohan', 'köhän', 'pahan', 'pähän', 'kaankohan', 'käänköhän'
+    # TODO: Enclitics with restricted uses: -kA on the negative verb,
+    # -s on interrogatives
+]
+_enclitics_re = re.compile('(?:' + '|'.join(_enclitics) + ')$')
 
 gradations = {
     "av1": {
@@ -146,8 +154,14 @@ class FinnishLemmatizer(Lemmatizer):
         if string in index:
             return [string]
 
-        forms = []
         oov_forms = []
+        string = _enclitics_re.sub('', string)
+        if string and string in index:
+            return [string]
+        else:
+            oov_forms.append(string)
+
+        forms = []
         for old, new in rules:
             if string.endswith(old):
                 rule_result = string[: len(string) - len(old)] + new
