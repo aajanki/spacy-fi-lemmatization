@@ -13,18 +13,56 @@ def expand(exc):
 
 
 verb_exc_data = {
-    'ei': ['en', 'et', 'ei', 'emme', 'ette', 'eivät'],
+    'ei': [
+        'en', 'et', 'ei', 'emme', 'ette', 'eivät',
+        'älä', 'älköön', 'älkäämme', 'älkää', 'älkööt',
+    ],
     'olla': [
-        'olla', 'olen', 'olet', 'on', 'olemme', 'olette', 'ovat',
-        'olin', 'olit', 'oli', 'olimme', 'olitte', 'olivat',
-        'ollut', 'olleet',
-        'lienen', 'lienet', 'lienee', 'lienemme', 'lienette', 'lienevät'
+        # present tense
+        'olla', 'olen', 'olet', 'on', 'olemme', 'olette', 'ovat', 'ollut',
+        # past tense
+        'olin', 'olit', 'oli', 'olimme', 'olitte', 'olivat', 'oltu',
+        'olleet',
+        # conditional
+        'olisin', 'olisit', 'olisi', 'olisimme', 'olisitte', 'olisivat',
+        'oltaisiin', 'olisi',
+        # imperative
+        'ole', 'olkoon', 'olkaamme', 'olkaa', 'olkoot', 'olko',
+        # potential
+        'lienen', 'lienet', 'lienee', 'lienemme', 'lienette', 'lienevät',
+        'liene',
     ],
     'tuntea': [
-        'tunnen', 'tunsi', 'tuntisi', 'tuntekoon', 'tuntenut', 'tunnettiin'
+        # present tense
+        'tunnen', 'tunnet', 'tuntee', 'tunnemme', 'tunnette', 'tuntevat',
+        'tunnetaan', 'tunne', 'tunneta',
+        # past tense
+        'tunsin', 'tunsit', 'tunsi', 'tunsimme', 'tunsitte', 'tunsivat',
+        'tunnettiin', 'tunnettu', 'tuntenut', 'tunteneet'
+        # conditional
+        'tuntisin', 'tuntisit', 'tuntisi', 'tuntisimme', 'tuntisitte',
+        'tunnettaisiin', 'tunnettaisi',
+        # imperative
+        'tunne', 'tuntekoon', 'tuntekaamme', 'tuntekaa', 'tuntekoot', 'tunteko',
+        # potential
+        'tuntenen', 'tuntenet', 'tuntenee', 'tuntenemme', 'tuntenette',
+        'tuntenevat', 'tuntene'
     ],
     'lähteä': [
-        'lähden', 'lähti', 'lähtisi', 'lähteköön', 'lähtenyt', 'lähdettiin'
+        # present tense
+        'lähden', 'lähdet', 'lähtee', 'lähdemme', 'lähdette', 'lähtevät',
+        'lähdetään', 'lähde', 'lähdetä',
+        # past tense
+        'lähdin', 'lähdit', 'lähti', 'lähdimme', 'lähditte', 'lähtivät',
+        'lähdettiin', 'lähtenyt', 'lähteneet',
+        # conditional
+        'lähtisin', 'lähtisit', 'lähtisi', 'lähtisimme', 'lähtisitte',
+        'lähtisivät', 'lähdettäisiin', 'lähdettäisi',
+        # imperative
+        'lähde', 'lähtekööt', 'lähtekäämme', 'lähtekää', 'lähteköön', 'lähtekö',
+        # potential
+        'lähtenen', 'lähtenet', 'lähtenee', 'lähtenemme', 'lähtenet',
+        'lähtenevät', 'lähdettäneen', 'lähtene'
     ],
 }
 
