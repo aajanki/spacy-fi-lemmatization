@@ -39,12 +39,14 @@ def analyse(word, voikko):
         baseform = (analysis.get('BASEFORM')
                     .rsplit('-', 1)[-1]
                     .lower())
+        if not baseform:
+            continue
 
         if is_noun(analysis):
             if valid_noun(analysis):
                 res.append((baseform, 'noun'))
         elif is_minen_noun(analysis):
-            res.append((word, 'noun'))
+            res.append((word.rsplit('-', 1)[-1].lower(), 'noun'))
         elif is_propn(analysis):
             res.append((baseform, 'propn'))
         elif is_adj(analysis):
@@ -69,9 +71,13 @@ def is_minen_noun(analysis):
 
 
 def valid_noun(analysis):
-    # Ignore forms like aurinkoamme, avioliittoamme
-    return (not analysis.get('BASEFORM').endswith('mme')
-            or (analysis.get('BASEFORM') in ['amme', 'lumme']))
+    base = analysis.get('BASEFORM')
+    # Skip forms like aurinkoamme, avioliittoamme
+    skip1 = base.endswith('mme') and base not in ['amme', 'lumme']
+    # Skip arvosanoja, pilkkasanoja, etc.
+    skip2 = base.endswith('noja') and base not in ['noja', 'anoja']
+
+    return not (skip1 or skip2)
 
 
 def is_propn(analysis):
