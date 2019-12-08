@@ -9,42 +9,63 @@ def main():
     adj_index = set()
     noun_index = set()
     propn_index = set()
+    verb_index = set()
     for line in sys.stdin:
         _, word = line.strip().split(' ', 1)
-        for analysis in voikko.analyze(word):
-            baseform = (analysis.get('BASEFORM')
-                        .rsplit('-', 1)[-1]
-                        .lower())
-
-            if is_noun(analysis) and valid_noun(analysis):
+        for baseform, wtype in analyse(word, voikko):
+            if wtype == 'noun':
                 noun_index.add(baseform)
-            elif is_propn(analysis):
+            elif wtype == 'propn':
                 propn_index.add(baseform)
-            elif is_adj(analysis):
+            elif wtype == 'adj':
                 adj_index.add(baseform)
+            elif wtype == 'verb':
+                verb_index.add(baseform)
 
     index = {
         'adj': sorted(adj_index),
         'noun': sorted(noun_index),
         'num': num_words(),
         'propn': sorted(propn_index),
+        'verb': sorted(verb_index),
     }
 
     json.dump(index, fp=sys.stdout, indent=2, ensure_ascii=False)
 
 
-def is_noun(analysis):
-    basic_noun = (
-        analysis.get('CLASS') == 'nimisana' and
-        analysis.get('SIJAMUOTO') == 'nimento' and
-        analysis.get('NUMBER') == 'singular')
-    # minen_noun = (
-    #     analysis.get('CLASS') == 'teonsana' and
-    #     analysis.get('MOOD') == 'MINEN-infinitive' and
-    #     analysis.get('SIJAMUOTO') == 'nimento' and
-    #     analysis.get('NUMBER') == 'singular')
+def analyse(word, voikko):
+    res = []
+    for analysis in voikko.analyze(word):
+        baseform = (analysis.get('BASEFORM')
+                    .rsplit('-', 1)[-1]
+                    .lower())
 
-    return basic_noun
+        if is_noun(analysis):
+            if valid_noun(analysis):
+                res.append((baseform, 'noun'))
+        elif is_minen_noun(analysis):
+            res.append((word, 'noun'))
+        elif is_propn(analysis):
+            res.append((baseform, 'propn'))
+        elif is_adj(analysis):
+            res.append((baseform, 'adj'))
+        elif is_verb(analysis):
+            res.append((baseform, 'verb'))
+
+    return res
+
+
+def is_noun(analysis):
+    return (analysis.get('CLASS') == 'nimisana' and
+            analysis.get('SIJAMUOTO') == 'nimento' and
+            analysis.get('NUMBER') == 'singular')
+
+
+def is_minen_noun(analysis):
+    return (analysis.get('CLASS') == 'teonsana' and
+            analysis.get('MOOD') == 'MINEN-infinitive' and
+            analysis.get('SIJAMUOTO') == 'nimento' and
+            analysis.get('NUMBER') == 'singular')
 
 
 def valid_noun(analysis):
@@ -64,6 +85,11 @@ def is_adj(analysis):
             analysis.get('SIJAMUOTO') == 'nimento' and
             analysis.get('NUMBER') == 'singular' and
             analysis.get('COMPARISON') == 'positive')
+
+
+def is_verb(analysis):
+    return (analysis.get('CLASS') == 'teonsana' and
+            analysis.get('MOOD') == 'A-infinitive')
 
 
 def num_words():
