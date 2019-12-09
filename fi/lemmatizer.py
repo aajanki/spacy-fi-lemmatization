@@ -63,29 +63,37 @@ gradations = {
     }
 }
 
-gradation_patterns_noun = [
-    ("av1", re.compile(r"^(.+?)(uvu|yvy)()$")),
-    ("av1", re.compile(r"^(.+?)(mm|nn|ll|rr|ng|t|p|k|v|d)([aeiouyäö][bcdfghjklmnpqrstvwxz]?)$")),
-    ("av2", re.compile(r"^(.+?)(tt|pp|kk|mp|nt|lt|rt|nk|p|t)([aeiouyäö][bcdfghjklmnpqrstvwxz]?)$"),),
-    ("av3", re.compile(r"^(.+?)(j)([aeiouyäö])$")),
-    ("av4", re.compile(r"^(.+?)(k)([aeiouyäö])$")),
-    ("av5", re.compile(r"^(.+?[aeiouyäö][aeiouyäö])()([aeiouyäö])$")),
-    ("av6", re.compile(r"^(.+?[aeiouyäö][aeiouyäö])(k)([aeiouyäö])$"))
-]
+gradation_patterns_noun = {
+    "w": [
+        ("av1", re.compile(r"^(.+?)(uvu|yvy)()$")),
+        ("av1", re.compile(r"^(.+?)(mm|nn|ll|rr|ng|t|p|k|v|d)([aeiouyäö][bcdfghjklmnpqrstvwxz]?)$")),
+        ("av3", re.compile(r"^(.+?)(j)([aeiouyäö])$")),
+        ("av5", re.compile(r"^(.+?[aeiouyäö][aeiouyäö])()([aeiouyäö])$")),
+    ],
+    "s": [
+        ("av2", re.compile(r"^(.+?)(tt|pp|kk|mp|nt|lt|rt|nk|p|t)([aeiouyäö][bcdfghjklmnpqrstvwxz]?)$"),),
+        ("av4", re.compile(r"^(.+?)(k)([aeiouyäö])$")),
+        ("av6", re.compile(r"^(.+?[aeiouyäö][aeiouyäö])(k)([aeiouyäö])$")),
+    ]
+}
 
-gradation_patterns_verb = [
-    ("av1", re.compile(r"^(.+?)(mm|nn|ll|rr|ng|t|p|k|v|d)(.+?)$")),
-    ("av2", re.compile(r"^(.+?)(tt|pp|kk|mp|nt|lt|rt|nk|bb|gg|p|t)(.+?)$"),),
-    ("av3", re.compile(r"^(.+?)(j)([aeiouyäö].*?)$")),
-    ("av4", re.compile(r"^(.+?)(k)([aeiouyäö].*?)$")),
-    ("av5", re.compile(r"^(.+?[aeiouyäö])()([aeiouyäö].*?)$")),
-    ("av6", re.compile(r"^(.+?[aeiouyäö])(k)([aeiouyäö].*?)$"))
-]
+gradation_patterns_verb = {
+    "w": [
+        ("av1", re.compile(r"^(.+?)(mm|nn|ll|rr|ng|t|p|k|v|d)(.+?)$")),
+        ("av3", re.compile(r"^(.+?)(j)([aeiouyäö].*?)$")),
+        ("av5", re.compile(r"^(.+?[aeiouyäö])()([aeiouyäö].*?)$")),
+    ],
+    "s": [
+        ("av2", re.compile(r"^(.+?)(tt|pp|kk|mp|nt|lt|rt|nk|bb|gg|p|t)(.+?)$"),),
+        ("av4", re.compile(r"^(.+?)(k)([aeiouyäö].*?)$")),
+        ("av6", re.compile(r"^(.+?[aeiouyäö])(k)([aeiouyäö].*?)$")),
+    ]
+}
 
 def create_gradation_transformer(patterns):
-    def f(word):
-        forms = []
-        for gname, gpat in patterns:
+    def f(word, pattern_key):
+        forms = [word]
+        for gname, gpat in patterns.get(pattern_key, []):
             m = gpat.match(word)
             if m:
                 prefix = m.group(1)
@@ -94,7 +102,9 @@ def create_gradation_transformer(patterns):
 
                 if (not (prefix and infix and (prefix[-1] == infix[0])) and
                     not (infix and suffix and (infix[-1] == suffix[0]))):
-                    forms.append(prefix + infix + suffix)
+                    form = prefix + infix + suffix
+                    if form not in forms:
+                        forms.append(form)
 
         if forms:
             return forms
@@ -181,16 +191,17 @@ class FinnishLemmatizer(Lemmatizer):
 
         forms = []
         for s in enclitic_forms:
-            vowel_conversion_needed = self._has_front_vowels(s)
+            vowel_conversion_needed = self._front_vowel_word(s)
 
-            for old, new in rules:
+            for old, new, grad_pattern in rules:
                 if vowel_conversion_needed:
                     old = self._convert_to_front_vowels(old)
                     new = self._convert_to_front_vowels(new)
 
                 if s.endswith(old):
                     rule_result = s[: len(s) - len(old)] + new
-                    for form in reverse_gradation(rule_result) + [rule_result]:
+                    gradation_forms = reverse_gradation(rule_result, grad_pattern)
+                    for form in gradation_forms:
                         if valid_lemma(form, index):
                             forms.append(form)
 
@@ -229,8 +240,10 @@ class FinnishLemmatizer(Lemmatizer):
                            string.endswith('minen') or
                            not string.isalpha())
 
-    def _has_front_vowels(self, string):
-        return any(x in "äöy" for x in string)
+    def _front_vowel_word(self, string):
+        last_front = max(string.rfind(x) for x in "äöy")
+        last_back = max(string.rfind(x) for x in "aou")
+        return last_front > last_back
 
     def _convert_to_front_vowels(self, string):
         return string.replace("a", "ä").replace("o", "ö").replace("u", "y")

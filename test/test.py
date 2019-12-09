@@ -2,7 +2,8 @@ from fi.lemmatizer import create_lemmatizer
 from itertools import chain
 
 
-def check(lemmatizer, cases, accept_less_common=True):
+def check(cases, accept_less_common=True):
+    lemmatizer = create_lemmatizer()
     expanded = list(chain.from_iterable(
         [(word, lemmas, pos) for word, lemmas in words]
         for pos, words in cases.items()
@@ -43,14 +44,10 @@ testcases = {
         ('kukissaan', ['kukka']),
         ('öissä', ['yö']),
         ('ylitöissä', ['ylityö']),
-        ('ääri-ilmiöissä', ['ääri-ilmiö', 'ääri-ilmiyö']),
         ('emäntien', ['emäntä', 'emäntie']),
         ('perusteluissa', ['perustelu']),
         ('esittelijä', ['esittelijä']),
         ('esittelijät', ['esittelijä']),
-        ('ampumahiihtäjä', ['ampumahiihtäjä']),
-        ('ampumahiihtäjäksi', ['ampumahiihtäjä']),
-        ('urheilu-ura', ['urheilu-ura']),
         ('tilanne', ['tilanne']),
         ('ensi-ilta', ['ensi-ilta']),
         ('elokuvan', ['elokuva']),
@@ -59,24 +56,45 @@ testcases = {
         ('tuli', ['tuli']),
         ('löytäminen', ['löytäminen']),
         ('teitä', ['tie']),
+        ('epäjärjestelmällisyydellä', ['epäjärjestelmällisyys']),
+        ('epäjärjestelmällisyydelläänkäänköhän', ['epäjärjestelmällisyys']),
+        ('koko', ['koko']),
+        ('kokkoko', ['kokko']),
+        ('yksikkö', ['yksikkö']),
+        ('yksikkökö', ['yksikkö']),
+        ('leipä', ['leipä']),
+        ('vanhemmaksi', ['vanhempi']),
+        ('vanhempana', ['vanhempi']),
+        ('perheenne', ['perhe']),
+        ('ruokaa', ['ruoka']),
+        ('tulevaisuudessa', ['tulevaisuus']),
+        ('ihminen', ['ihminen']),
+        ('ajaminenkaan', ['ajaminen']),
+        ('testaamisessa', ['testaaminen']),
+        ('yksipuolistuminen', ['yksipuolistuminen']),
+        ('sulautumiseen', ['sulautuminen']),
+
+        # compound words
+        ('1500-luvulla', ['1500-luku']),
+        ('ääri-ilmiöissä', ['ääri-ilmiö', 'ääri-ilmiyö']),
+        ('ampumahiihtäjä', ['ampumahiihtäjä']),
+        ('ampumahiihtäjäksi', ['ampumahiihtäjä']),
+        ('urheilu-ura', ['urheilu-ura']),
         ('puku', ['puku']),
         ('tonttupukuihin', ['tonttupuku']),
         ('kuopistaan', ['kuoppa']),
         ('maakuopistaan', ['maakuoppa']),
         ('johdolle', ['johto']),
         ('tietohallintajohdolle', ['tietohallintajohto']),
-        ('epäjärjestelmällisyydellä', ['epäjärjestelmällisyys']),
-        ('epäjärjestelmällisyydelläänkäänköhän', ['epäjärjestelmällisyys']),
-        ('1500-luvulla', ['1500-luku']),
-        ('kokkoko', ['kokko']),
-        ('yksikkö', ['yksikkö']),
-        ('yksikkökö', ['yksikkö']),
-        ('leipä', ['leipä']),
         ('työlupa', ['työlupa']),
         ('työlupakaan', ['työlupa']),
-        ('vanhemmaksi', ['vanhempi']),
-        ('vanhempana', ['vanhempi']),
-        ('perheenne', ['perhe']),
+        ('markkinavalvonnalla', ['markkinavalvonta']),
+        ('yökerhossa', ['yökerho']),
+        ('lähtökohdiltaan', ['lähtökohta']),
+        ('voimakeinoja', ['voimakeino']),
+        ('keskiluokkaa', ['keskiluokka']),
+        ('kirjoitusasulla', ['kirjoitusasu']),
+        ('kansalaisuuskäsitteenä', ['kansalaisuuskäsite']),
 
         # gradation test cases
         # av1
@@ -120,10 +138,13 @@ testcases = {
         ('en', ['ei']),
         ('emme', ['ei']),
         ('ettekö', ['ei']),
+        ('älkää', ['ei']),
 
         # olla
         ('oli', ['olla']),
         ('olitte', ['olla']),
+        ('ole', ['olla']),
+        ('olisi', ['olla']),
 
         # person
         ('annan', ['antaa']),
@@ -136,6 +157,9 @@ testcases = {
         ('tulee', ['tulla']),
         ('häviätte', ['hävitä']),
         ('kitisevät', ['kitistä']),
+        ('täytyy', ['täytyä']),
+        ('grillailen', ['grillailla']),
+        ('pyöritteli', ['pyöritellä']),
 
         # past tense
         ('kelluit', ['kellua']),
@@ -143,19 +167,24 @@ testcases = {
         ('pinositte', ['pinota']),
         ('valaistuivat', ['valaistua']),
         ('jäi', ['jäädä']),
+        ('friikahti', ['friikahtaa']),
 
         # conditional
         ('hakisi', ['hakea']),
         ('imartelisitte', ['imarrella']),
         ('karmisi', ['karmia']),
 
+        # passive
+        ('esitellään', ['esitellä']),
+
         # imperative
         ('järisyttäköön', ['järisyttää']),
         ('astukoon', ['astua']),
+        ('nähdäkseen', ['nähdä']),
 
         # A-infinitive
-        ('pelastua', ['pelastaa']),
-        ('pelastuimme', ['pelastaa']),
+        ('pelastua', ['pelastua']),
+        ('pelastuimme', ['pelastua']),
 
         # NUT-participle
         ('kimpaantunut', ['kimpaantua']),
@@ -191,6 +220,7 @@ testcases = {
         ('punaisten', ['punainen']),
         ('sujuvilla', ['sujuva']),
         ('ranskalaisemme', ['ranskalainen']),
+        ('ihanan', ['ihana']),
 
         # komparatiivi
         ('lämpimämpi', ['lämmin']),
@@ -224,14 +254,16 @@ testcases = {
 
     'num': [
         ('nollakin', ['nolla']),
-        ('neljäs', ['neljä']),
+        ('neljäs', ['neljäs']),
         ('viiden', ['viisi']),
         ('viidenkin', ['viisi']),
         ('kymmentä', ['kymmenen']),
         ('kymmeniä', ['kymmenen']),
-        ('kymmenes', ['kymmenen']),
+        ('kymmenes', ['kymmenes']),
         ('tuhannen', ['tuhat']),
         ('miljoonaa', ['miljoona']),
+        ('kahdesta', ['kaksi']),
+        ('yhtenä', ['yksi']),
     ],
 
     # 'pron': [
@@ -244,8 +276,7 @@ testcases = {
     # ],
 }
 
-lemmatizer = create_lemmatizer()
-failed_prop = check(lemmatizer, testcases)
+failed_prop = check(testcases)
 
 if failed_prop > 0:
     print(f'Failed: {failed_prop*100:.1f} % ')

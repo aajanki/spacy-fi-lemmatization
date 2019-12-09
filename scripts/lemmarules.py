@@ -9,6 +9,12 @@ from itertools import takewhile
 from pathlib import Path
 
 
+GRAD_NONE = 0
+GRAD_SW = 1
+GRAD_WS = 2
+GRAD_WEAK = 3
+GRAD_STRONG = 4
+
 @plac.annotations(
     noun_affix_file=('Path to the noun affix file', 'positional'),
     verb_affix_file=('Path to the verb affix file', 'positional'),
@@ -37,6 +43,15 @@ def main(noun_affix_file, verb_affix_file, destdir):
         json.dump(inflection_rules, fp=fp, indent=2, ensure_ascii=False)
 
 
+def choose_gradation(inflection_type, rule):
+    if inflection_type.gradation == GRAD_SW and rule.gradation == GRAD_WEAK:
+        return 'w' # unapply av1, av3, av5
+    elif inflection_type.gradation == GRAD_WS and rule.gradation == GRAD_STRONG:
+        return 's' # unapply av2, av4, av6
+    else:
+        return '-'
+
+
 def subst_rules(affix_file):
     rulelist = []
     for t in voikkoinfl.readInflectionTypes(affix_file):
@@ -44,22 +59,23 @@ def subst_rules(affix_file):
         if t.matchWord not in ['poika', 'mies', '[vm]eri']:
             for rule in t.inflectionRules:
                 for old, new in expand(t, rule.delSuffix, rule.addSuffix, rule.gradation):
-                    rulelist.append((old, new))
+                    g = choose_gradation(t, rule)
+                    rulelist.append((old, new, g))
 
     # FIXME: The following should be applied only to adjectives
     # comparative
-    rulelist.append(('mpi', ''))
-    rulelist.append(('ampi', 's'))
-    rulelist.append(('ampi', 'n'))
-    rulelist.append(('mampi', 'n'))
-    rulelist.append(('sempi', 'nen'))
-    rulelist.append(('dempi', 'si'))
+    rulelist.append(('mpi', '', 's'))
+    rulelist.append(('ampi', 's', 's'))
+    rulelist.append(('ampi', 'n', 's'))
+    rulelist.append(('mampi', 'n', 's'))
+    rulelist.append(('sempi', 'nen', 's'))
+    rulelist.append(('dempi', 'si', 's'))
     # superlative
-    rulelist.append(('in', 'a'))
-    rulelist.append(('in', 't'))
-    rulelist.append(('ein', 'a'))
-    rulelist.append(('ein', 'is'))
-    rulelist.append(('min', 'n'))
+    rulelist.append(('in', 'a', '-'))
+    rulelist.append(('in', 't', '-'))
+    rulelist.append(('ein', 'a', '-'))
+    rulelist.append(('ein', 'is', '-'))
+    rulelist.append(('min', 'n', '-'))
 
     return list(OrderedDict.fromkeys(rulelist))
 
@@ -114,7 +130,8 @@ def verb_rules(affix_file):
 
                 for add_suffix in add_suffixes:
                     for old, new in expand(t, rule.delSuffix, add_suffix, rule.gradation):
-                        rulelist.append((old, new))
+                        g = choose_gradation(t, rule)
+                        rulelist.append((old, new, g))
 
     rulelist = list(OrderedDict.fromkeys(rulelist))
     return rulelist
@@ -223,17 +240,19 @@ def combine_rules(rules1, rules2, vowel_match=False):
         r2 = rules2.get(pos, [])
 
         rulelist = copy.copy(r1) + copy.copy(r2)
-        for old1, new1 in r1:
-            for old2, new2 in r2:
+        for old1, new1, grad1 in r1:
+            for old2, new2, grad2 in r2:
+                assert not (grad1 != '-' and grad2 != '-' and grad1 != grad2)
+
                 if vowel_harmony(old1, old2):
                     if new1 == '':
                         a, b = make_compatible(old2, old1, vowel_match)
                         if a is not None and b is not None:
-                            rulelist.append((a + b, new2))
+                            rulelist.append((a + b, new2, grad2))
                     elif old2.endswith(new1):
                         a, b = make_compatible(old2[:-len(new1)], old1, vowel_match)
                         if a is not None and b is not None:
-                            rulelist.append((a + b, new2))
+                            rulelist.append((a + b, new2, grad2))
 
         combined[pos] = list(OrderedDict.fromkeys(rulelist))
 
@@ -302,22 +321,22 @@ def possessive_suffix_rules():
 
     return {
         'noun': [
-            ('ni', ''),
-            ('kseni', 'ksi'),
-            ('si', ''),
-            ('ksesi', 'ksi'),
-            ('mme', ''),
-            ('ksemme', 'ksi'),
-            ('nne', ''),
-            ('ksenne', 'ksi'),
-            ('nsa', ''),
-            ('ksensa', 'ksi'),
-            ('aan', 'a'),
-            ('een', 'e'),
-            ('iin', 'i'),
-            ('oon', 'o'),
-            ('uun', 'u'),
-            ('yyn', 'y'),
+            ('ni', '', '-'),
+            ('kseni', 'ksi', '-'),
+            ('si', '', '-'),
+            ('ksesi', 'ksi', '-'),
+            ('mme', '', '-'),
+            ('ksemme', 'ksi', '-'),
+            ('nne', '', '-'),
+            ('ksenne', 'ksi', '-'),
+            ('nsa', '', '-'),
+            ('ksensa', 'ksi', '-'),
+            ('aan', 'a', '-'),
+            ('een', 'e', '-'),
+            ('iin', 'i', '-'),
+            ('oon', 'o', '-'),
+            ('uun', 'u', '-'),
+            ('yyn', 'y', '-'),
         ]
     }
 
