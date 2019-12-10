@@ -168,6 +168,7 @@ testcases = {
         ('valaistuivat', ['valaistua']),
         ('jäi', ['jäädä']),
         ('friikahti', ['friikahtaa']),
+        ('pelastuimme', ['pelastua']),
 
         # conditional
         ('hakisi', ['hakea']),
@@ -176,15 +177,17 @@ testcases = {
 
         # passive
         ('esitellään', ['esitellä']),
+        ('opittiin', ['oppia']),
+        ('supistaan', ['supista']),
+        ('juodaan', ['juoda']),
 
         # imperative
         ('järisyttäköön', ['järisyttää']),
         ('astukoon', ['astua']),
-        ('nähdäkseen', ['nähdä']),
 
         # A-infinitive
         ('pelastua', ['pelastua']),
-        ('pelastuimme', ['pelastua']),
+        ('nähdäkseen', ['nähdä']),
 
         # NUT-participle
         ('kimpaantunut', ['kimpaantua']),

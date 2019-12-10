@@ -91,6 +91,7 @@ def verb_rules(affix_file):
                     continue
 
                 if rule.name == 'preesens_yks_1':
+                    # present tense
                     suffix = rule.addSuffix
 
                     assert suffix.endswith('n')
@@ -119,11 +120,23 @@ def verb_rules(affix_file):
                         suffix, suffix[:-1] + 't',
                         suffix[:-1] + 'mme', suffix[:-1] + 'tte', suffix[:-1] + 'vat'
                     ] + third_person
+
                 elif rule.name in ['imperfekti_yks_3', 'kondit_yks_3']:
+                    # past test and conditional
                     suffix = rule.addSuffix
                     add_suffixes = [
                         suffix + 'n', suffix + 't', suffix,
                         suffix + 'mme', suffix + 'tte', suffix + 'vat'
+                    ]
+
+                elif rule.name == 'imperfekti_pass':
+                    # passive
+                    suffix = rule.addSuffix
+                    assert suffix.endswith('iin')
+
+                    add_suffixes = [
+                        suffix.replace('iin', 'aan'), # present
+                        suffix, # past
                     ]
                 else:
                     add_suffixes = [rule.addSuffix]
