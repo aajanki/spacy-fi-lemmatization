@@ -180,6 +180,9 @@ testcases = {
         ('opittiin', ['oppia']),
         ('supistaan', ['supista']),
         ('juodaan', ['juoda']),
+        ('juhlittu', ['juhlia']),
+        ('kadehdittukaan', ['kadehtia']),
+        ('kiirehditty', ['kiirehtiä']),
 
         # imperative
         ('järisyttäköön', ['järisyttää']),

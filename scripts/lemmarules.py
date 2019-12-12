@@ -137,6 +137,7 @@ def verb_rules(affix_file):
                     add_suffixes = [
                         suffix.replace('iin', 'aan'), # present
                         suffix, # past
+                        suffix.replace('iin', 'u'), # negation
                     ]
                 else:
                     add_suffixes = [rule.addSuffix]
