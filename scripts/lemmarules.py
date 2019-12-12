@@ -96,30 +96,36 @@ def verb_rules(affix_file):
 
                     assert suffix.endswith('n')
 
-                    third_person = []
+                    third_singular = []
                     if len(suffix) >= 2 and is_vowel(suffix[-2]):
-                        third_person = [suffix[:-1] + suffix[-2]]
+                        third_singular = [suffix[:-1] + suffix[-2]]
                     elif len(t.rmsfx) == 0:
                         x = t.matchWord[-1]
                         if x in 'aeiouA':
-                            third_person = [x.lower()]
+                            third_singular = [x.lower()]
                         else:
                             print(f'FIXME: {t.joukahainenClasses[0]} third person')
                     elif len(t.matchWord) > len(t.rmsfx):
                         x = t.matchWord[:-len(t.rmsfx)][-1]
                         if x in 'aeiouA':
-                            third_person = [x.lower()]
+                            third_singular = [x.lower()]
                         elif x == 'V':
-                            third_person = ['e', 'i', 'o', 'u']
+                            third_singular = ['e', 'i', 'o', 'u']
                         else:
                             print(f'FIXME: {t.joukahainenClasses[0]} third person')
                     else:
                         print(f'FIXME: {t.joukahainenClasses[0]} third person')
 
+                    imperative_second_singular = ['']
+                    if len(suffix) >= 1 and suffix[0] == 'a':
+                        imperative_second_singular = ['a']
+
                     add_suffixes = [
+                        # singular (1st and 2nd person)
                         suffix, suffix[:-1] + 't',
-                        suffix[:-1] + 'mme', suffix[:-1] + 'tte', suffix[:-1] + 'vat'
-                    ] + third_person
+                        # plural
+                        suffix[:-1] + 'mme', suffix[:-1] + 'tte', suffix[:-1] + 'vat',
+                    ] + third_singular + imperative_second_singular
 
                 elif rule.name in ['imperfekti_yks_3', 'kondit_yks_3']:
                     # past test and conditional
@@ -135,10 +141,26 @@ def verb_rules(affix_file):
                     assert suffix.endswith('iin')
 
                     add_suffixes = [
-                        suffix.replace('iin', 'aan'), # present
+                        suffix[:-3] + 'aan', # present
                         suffix, # past
-                        suffix.replace('iin', 'u'), # negation
+                        suffix[:-3] + 'u', # negation
                     ]
+
+                elif rule.name == 'imperatiivi_yks_3':
+                    # imperative
+                    # (the 2nd person singular is handled at the
+                    # preesens_yks_1 branch)
+                    suffix = rule.addSuffix
+                    assert suffix.endswith('koon')
+
+                    add_suffixes = [
+                        suffix, # 3rd person singular
+                        suffix[:-3] + 'aamme', # 1st person plural
+                        suffix[:-3] + 'aa', # 2nd person plural
+                        suffix[:-1] + 't', # 3rd person plural
+                        suffix[:-2], # negative plural
+                    ]
+
                 else:
                     add_suffixes = [rule.addSuffix]
 

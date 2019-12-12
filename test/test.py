@@ -187,6 +187,13 @@ testcases = {
         # imperative
         ('järisyttäköön', ['järisyttää']),
         ('astukoon', ['astua']),
+        ('kadotkaamme', ['kadota']),
+        ('polje', ['polkea']),
+        ('epäröi', ['epäröidä']),
+        ('hypätkää', ['hypätä']),
+        ('kirjoittakoot', ['kirjoittaa']),
+        ('kutoko', ['kutoa']),
+        ('valehdelko', ['valehdella']),
 
         # A-infinitive
         ('pelastua', ['pelastua']),
