@@ -116,16 +116,14 @@ def verb_rules(affix_file):
                     else:
                         print(f'FIXME: {t.joukahainenClasses[0]} third person')
 
-                    imperative_second_singular = ['']
-                    if len(suffix) >= 1 and suffix[0] == 'a':
-                        imperative_second_singular = ['a']
-
                     add_suffixes = [
                         # singular (1st and 2nd person)
                         suffix, suffix[:-1] + 't',
                         # plural
                         suffix[:-1] + 'mme', suffix[:-1] + 'tte', suffix[:-1] + 'vat',
-                    ] + third_singular + imperative_second_singular
+                        # imperative second person singular
+                        suffix[:-1],
+                    ] + third_singular
 
                 elif rule.name in ['imperfekti_yks_3', 'kondit_yks_3']:
                     # past test and conditional

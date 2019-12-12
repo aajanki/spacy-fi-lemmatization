@@ -189,6 +189,7 @@ testcases = {
         ('astukoon', ['astua']),
         ('kadotkaamme', ['kadota']),
         ('polje', ['polkea']),
+        ('valitse', ['valita']),
         ('epäröi', ['epäröidä']),
         ('hypätkää', ['hypätä']),
         ('kirjoittakoot', ['kirjoittaa']),
