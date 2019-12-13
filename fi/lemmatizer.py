@@ -144,7 +144,7 @@ class FinnishLemmatizer(Lemmatizer):
             rules_class = univ_pos
         elif univ_pos in (NUM, "NUM", "num"):
             univ_pos = "num"
-            rules_class = univ_pos
+            rules_class = "noun"
         elif univ_pos in (PUNCT, "PUNCT", "punct"):
             univ_pos = "punct"
             rules_class = univ_pos

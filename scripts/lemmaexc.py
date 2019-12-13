@@ -94,29 +94,87 @@ noun_exc_data = {
 }
 
 num_exc_data = {
-    'yksi': ['yhden', 'yhtä', 'yhteen'],
-    'kaksi': ['kahden', 'kahta', 'kahteen'],
-    'kolme': ['kolmen', 'kolmea', 'kolmeen'],
-    'neljä': ['neljän', 'neljää', 'neljään'],
-    'viisi': ['viiden', 'viittä', 'viiteen'],
-    'kuusi': ['kuuden', 'kuutta', 'kuuteen'],
-    'seitsemän': ['seitsemän', 'seitsemää', 'seitsemään'],
-    'kahdeksan': ['kahdeksaa', 'kahdeksaan'],
-    'yhdeksän': ['yhdeksää', 'yhdeksään'],
-    'kymmenen': ['kymmentä', 'kymmeneen'],
-    'yksitoista': ['yhdentoista', 'yhtätoista', 'yhteentoista'],
-    'kaksitoista': ['kahdentoista', 'kahtatoista', 'kahteentoista'],
-    'kolmetoista': ['kolmentoista', 'kolmeatoista', 'kolmeentoista'],
-    'neljätoista': ['neljäntoista', 'neljäätoista', 'neljääntoista'],
-    'viisitoista': ['viidentoista', 'viittätoista', 'viiteentoista'],
-    'kuusitoista': ['kuudentoista', 'kuuteentoista', 'kuuttatoista'],
-    'seitsemäntoista': ['seitsemääntoista', 'seitsemäätoista'],
-    'kahdeksantoista': ['kahdeksaantoista', 'kahdeksaatoista'],
-    'yhdeksäntoista': ['yhdeksääntoista', 'yhdeksäätoista'],
-    'sata': ['sadan', 'sataa', 'sataan'],
-    'tuhat': ['tuhannen', 'tuhatta', 'tuhanteen'],
-    'miljoona': ['miljoonan', 'miljoonaa', 'miljoonaan'],
+    'yksi': [
+        'yhden', 'yhtä', 'yhtenä', 'yhdeksi', 'yhdessä', 'yhdestä',
+        'yhteen', 'yhdellä', 'yhdeltä', 'yhdelle',
+        'yhdet', 'yksien', 'yksiä', 'yksinä', 'yksiksi', 'yksissä',
+        'yksistä', 'yksiin', 'yksillä', 'yksiltä', 'yksille',
+    ],
+    'kaksi': [
+        'kahden', 'kahta', 'kahtena', 'kahdeksi', 'kahdessa', 'kahdesta',
+        'kahteen', 'kahdella', 'kahdelta', 'kahdelle',
+        'kahdet', 'kaksien', 'kaksia', 'kaksina', 'kaksiksi', 'kaksissa',
+        'kaksista', 'kaksiin', 'kaksilla', 'kaksilta', 'kaksille',
+    ],
+    'kolme': [
+        'kolmen', 'kolmea', 'kolmena', 'kolmeksi', 'kolmessa', 'kolmesta',
+        'kolmeen', 'kolmella', 'kolmelta', 'kolmelle',
+        'kolmet', 'kolmien', 'kolmia', 'kolmina', 'kolmiksi', 'kolmissa',
+        'kolmista', 'kolmiin', 'kolmilla', 'kolmilta', 'kolmille',
+    ],
+    'neljä': [
+        'neljän', 'neljää', 'neljänä', 'neljäksi', 'neljässä', 'neljästä',
+        'neljään', 'neljällä', 'neljältä', 'neljälle',
+        'neljät', 'neljien', 'neljiä', 'neljinä', 'neljiksi', 'neljissä',
+        'neljistä', 'neljiin', 'neljillä', 'neljiltä', 'neljille',
+    ],
+    'viisi': [
+        'viiden', 'viittä', 'viitenä', 'viideksi', 'viidessä', 'viidestä',
+        'viiteen', 'viidellä', 'viideltä', 'viidelle',
+        'viidet', 'viisien', 'viisiä', 'viisinä', 'viisiksi', 'viisissä',
+        'viisistä', 'viisiin', 'viisillä', 'viisiltä', 'viisille',
+    ],
+    'kuusi': [
+        'kuuden', 'kuutta', 'kuutena', 'kuudeksi', 'kuudessa', 'kuudesta',
+        'kuuteen', 'kuudella', 'kuudelta', 'kuudelle',
+        'kuudet', 'kuusien', 'kuusia', 'kuusina', 'kuusiksi', 'kuusissa',
+        'kuusista', 'kuusiin' 'kuusilla', 'kuusilta', 'kuusille',
+    ],
+    'seitsemän': [
+        'seitsemää', 'seitsemänä', 'seitsemäksi', 'seitsemässä', 'seitsemästä',
+        'seitsemään', 'seitsemällä', 'seitsemältä', 'seitsemälle',
+        'seitsemät', 'seitsemien', 'seitsemiä', 'seitseminä', 'seitsemiksi',
+        'seitsemissä', 'seitsemistä', 'seitsemiin', 'seitsemillä',
+        'seitsemiltä', 'seitsemille',
+    ],
+    'kahdeksan': [
+        'kahdeksaa', 'kadeksana', 'kahdeksaksi', 'kahdeksassa', 'kahdeksasta',
+        'kahdeksaan', 'kahdeksalla', 'kahdeksalta', 'kahdeksalle',
+        'kahdeksat', 'kahdeksien', 'kahdeksia', 'kahdeksina', 'kahdeksiksi',
+        'kahdeksissa', 'kahdeksista', 'kahdeksiin', 'kahdeksilla',
+        'kahdeksilta', 'kahdeksille',
+    ],
+    'yhdeksän': [
+        'yhdeksää', 'yhdeksänä', 'yhdeksäksi', 'yhdeksässä', 'yhdeksästä',
+        'yhdeksään', 'yhdeksällä', 'yhdeksältä', 'yhdeksälle',
+        'yhdeksät', 'yhdeksien', 'yhdeksiä', 'yhdeksinä', 'yhdeksiksi',
+        'yhdeksissä', 'yhdeksistä', 'yhdeksiin', 'yhdeksillä', 'yhdeksiltä',
+        'yhdeksille',
+    ],
+    'kymmenen': [
+        'kymmentä', 'kymmenenä', 'kymmeneksi', 'kymmenessä', 'kymmenestä',
+        'kymmeneen', 'kymmenellä', 'kymmeneltä', 'kymmenelle',
+        'kymmenet', 'kymmenien', 'kymmeniä', 'kymmeninä', 'kymmeniksi',
+        'kymmenissä', 'kymmenistä', 'kymmeniin', 'kymmenillä', 'kymmeniltä',
+        'kymmenille',
+    ],
+    'tuhat': [
+        'tuhannen', 'tuhatta', 'tuhantena', 'tuhanneksi', 'tuhannessa',
+        'tuhannesta', 'tuhanteen', 'tuhannella', 'tuhannelta', 'tuhannelle',
+        'tuhannet', 'tuhansien', 'tuhansia', 'tuhansina', 'tuhansiksi',
+        'tuhansissa', 'tuhansiksi', 'tuhansissa', 'tuhansista', 'tuhansiin',
+        'tuhansilla', 'tuhansilta', 'tuhansille',
+    ],
+    # sata, miljoona and miljardi have regular inflections
 }
+
+for num in [
+        'yksi', 'kaksi', 'kolme', 'neljä', 'viisi', 'kuusi',
+        'seitsemän', 'kahdeksan', 'yhdeksän'
+]:
+    num_exc_data[num + 'toista'] = [
+        form + 'toista' for form in num_exc_data[num]
+    ]
 
 adj_exc_data = {
     'hyvä': ['parempi', 'paras']
