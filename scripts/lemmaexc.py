@@ -68,9 +68,9 @@ verb_exc_data = {
 
 noun_exc_data = {
     'poika': [
-        'pojan', 'poikaa', 'pojiksi', 'poikana', 'pojissa', 'pojista',
-        'poikaan', 'pojilla', 'pojilta', 'pojille', 'pojitta', 'pojat',
-        'poikien', 'oikia', 'pojiksi', 'poikina', 'pojissa', 'pojista',
+        'pojan', 'poikaa', 'pojaksi', 'poikana', 'pojassa', 'pojasta',
+        'poikaan', 'pojalla', 'pojalta', 'pojalle', 'pojatta', 'pojat',
+        'poikien', 'poikia', 'pojiksi', 'poikina', 'pojissa', 'pojista',
         'poikiin', 'pojilla', 'pojilta', 'pojille', 'pojitta', 'pojin'
     ],
     'mies': [
