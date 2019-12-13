@@ -55,7 +55,7 @@ testcases = {
         ('aika', ['aika']),
         ('tuli', ['tuli']),
         ('löytäminen', ['löytäminen']),
-        ('teitä', ['tie']),
+        ('teitä', ['tie', 'tee']),
         ('epäjärjestelmällisyydellä', ['epäjärjestelmällisyys']),
         ('epäjärjestelmällisyydelläänkäänköhän', ['epäjärjestelmällisyys']),
         ('koko', ['koko']),
