@@ -95,6 +95,8 @@ testcases = {
         ('keskiluokkaa', ['keskiluokka']),
         ('kirjoitusasulla', ['kirjoitusasu']),
         ('kansalaisuuskäsitteenä', ['kansalaisuuskäsite']),
+        ('laivapojilla', ['laivapoika']),
+        ('valtameriin', ['valtameri']),
 
         # gradation test cases
         # av1
