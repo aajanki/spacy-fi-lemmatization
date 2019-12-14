@@ -45,8 +45,8 @@ def analyse(word, voikko):
         if is_noun(analysis):
             if valid_noun(analysis):
                 res.append((baseform, 'noun'))
-        elif is_minen_noun(analysis):
-            res.append((word.rsplit('-', 1)[-1].lower(), 'noun'))
+        #elif is_minen_noun(analysis):
+        #    res.append((word.rsplit('-', 1)[-1].lower(), 'noun'))
         elif is_propn(analysis):
             res.append((baseform, 'propn'))
         elif is_adj(analysis):
