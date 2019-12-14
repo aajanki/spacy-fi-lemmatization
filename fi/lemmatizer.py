@@ -135,8 +135,16 @@ class SuffixTransformation(object):
 class FinnishLemmatizer(Lemmatizer):
     def __init__(self, lookups, *args, **kwargs):
         super(FinnishLemmatizer, self).__init__(lookups, *args, **kwargs)
+
         rules_table = self.lookups.get_table("lemma_rules", {})
-        self.rules_trie = self._build_trie(rules_table)
+        self.rules_trie = {}
+        for pos, rules in rules_table.items():
+            self.rules_trie[pos] = self._build_trie(rules)
+
+        index_table = self.lookups.get_table("lemma_index", {})
+        self.index_sets = {}
+        for pos, values in index_table.items():
+            self.index_sets[pos] = set(values)
 
     def __call__(self, string, univ_pos, morphology=None):
         """Lemmatize a string.
@@ -171,12 +179,11 @@ class FinnishLemmatizer(Lemmatizer):
         else:
             return [string.lower()]
 
-        index_table = self.lookups.get_table("lemma_index", {})
         exc_table = self.lookups.get_table("lemma_exc", {})
         valid_lemma = self._valid_noun_lemma if univ_pos == "noun" else self._valid_index_lemma
         lemmas = self.lemmatize(
             string,
-            index_table.get(univ_pos, {}),
+            self.index_sets.get(get_string_id(univ_pos), set()),
             exc_table.get(univ_pos, {}),
             self.rules_trie.get(get_string_id(rules_class), Trie()),
             gradation_reversal.get(rules_class, lambda x, y: []),
@@ -266,15 +273,12 @@ class FinnishLemmatizer(Lemmatizer):
         return ((harmony_type1 == 'front' and harmony_type2 == 'back') or
                 (harmony_type1 == 'back' and harmony_type2 == 'front'))
 
-    def _build_trie(self, rules_table):
-        rules_trie = {}
-        for pos, rules in rules_table.items():
-            trie = Trie()
-            for old, new, gradation in rules:
-                transformation = SuffixTransformation(len(old), new, gradation)
-                trie.insert(reversed(old), transformation)
-            rules_trie[pos] = trie
-        return rules_trie
+    def _build_trie(self, rules):
+        trie = Trie()
+        for old, new, gradation in rules:
+            transformation = SuffixTransformation(len(old), new, gradation)
+            trie.insert(reversed(old), transformation)
+        return trie
 
 
 def create_lemmatizer():
