@@ -31,6 +31,7 @@ def main(noun_affix_file, verb_affix_file, destdir):
     #     inflection_rules
     # )
     rules = combine_rules(possessive_suffix_rules(), inflection_rules, vowel_match=True)
+    rules = extend_front_vowel_rules(rules)
 
     for pos, rs in rules.items():
         print(f'{len(rs)} {pos} rules')
@@ -213,6 +214,23 @@ def expand(inflection_type, del_suffix, add_suffix, gradation):
                     yield (add, remove_literal)
 
 
+def front_vowel_rules(rules):
+    new_rules = []
+    for old, new, g in rules:
+        if has_back_vowels(old) or has_back_vowels(new):
+            old_front = back_to_front_vowels(old)
+            new_front = back_to_front_vowels(new)
+            new_rules.append((old_front, new_front, g))
+    return new_rules
+
+
+def extend_front_vowel_rules(rules_dict):
+    res = {}
+    for pos, rules in rules_dict.items():
+        res[pos] = rules + front_vowel_rules(rules)
+    return res
+
+
 def vowel_harmony(word1, word2):
     harmony1 = vowel_harmony_type(word1)
     harmony2 = vowel_harmony_type(word2)
@@ -221,11 +239,8 @@ def vowel_harmony(word1, word2):
 
 
 def vowel_harmony_type(word):
-    back = 'aou'
-    front = 'äöy'
-
-    last_back = max(word.rfind(x) for x in back)
-    last_front = max(word.rfind(x) for x in front)
+    last_back = max(word.rfind(x) for x in 'aou')
+    last_front = max(word.rfind(x) for x in 'äöy')
 
     if last_back > last_front:
         return 'back'
@@ -233,6 +248,14 @@ def vowel_harmony_type(word):
         return 'front'
     else:
         return 'indefinite'
+
+
+def has_back_vowels(word):
+    return any(x in word for x in 'aou')
+
+
+def back_to_front_vowels(string):
+    return string.replace('a', 'ä').replace('o', 'ö').replace('u', 'y')
 
 
 def expand_pattern(pattern):
@@ -370,7 +393,6 @@ def possessive_suffix_rules():
             ('iin', 'i', '-'),
             ('oon', 'o', '-'),
             ('uun', 'u', '-'),
-            ('yyn', 'y', '-'),
         ]
     }
 

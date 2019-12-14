@@ -8,6 +8,8 @@ from collections import OrderedDict
 from spacy.lemmatizer import Lemmatizer
 from spacy.lookups import Lookups
 from spacy.symbols import NOUN, VERB, ADJ, PUNCT, PROPN, ADV, NUM
+from spacy.strings import get_string_id
+from .trie import Trie
 
 
 # http://scripta.kotus.fi/visk/sisallys.php?p=126
@@ -105,12 +107,7 @@ def create_gradation_transformer(patterns):
                     form = prefix + infix + suffix
                     if form not in forms:
                         forms.append(form)
-
-        if forms:
-            return forms
-        else:
-            return [word]
-
+        return forms
     return f
 
 
@@ -120,7 +117,27 @@ gradation_reversal = {
 }
 
 
+class SuffixTransformation(object):
+    def __init__(self, del_len, add, gradation):
+        self.del_len = del_len
+        self.add = add
+        self.gradation_rule = gradation
+
+    def __call__(self, word, reverse_gradation):
+        if self.del_len >= len(word):
+            form = self.add
+        else:
+            form = word[:len(word) - self.del_len] + self.add
+
+        return reverse_gradation(form, self.gradation_rule)
+
+
 class FinnishLemmatizer(Lemmatizer):
+    def __init__(self, lookups, *args, **kwargs):
+        super(FinnishLemmatizer, self).__init__(lookups, *args, **kwargs)
+        rules_table = self.lookups.get_table("lemma_rules", {})
+        self.rules_trie = self._build_trie(rules_table)
+
     def __call__(self, string, univ_pos, morphology=None):
         """Lemmatize a string.
 
@@ -156,14 +173,13 @@ class FinnishLemmatizer(Lemmatizer):
 
         index_table = self.lookups.get_table("lemma_index", {})
         exc_table = self.lookups.get_table("lemma_exc", {})
-        rules_table = self.lookups.get_table("lemma_rules", {})
         valid_lemma = self._valid_noun_lemma if univ_pos == "noun" else self._valid_index_lemma
         lemmas = self.lemmatize(
             string,
             index_table.get(univ_pos, {}),
             exc_table.get(univ_pos, {}),
-            rules_table.get(rules_class, []),
-            gradation_reversal.get(rules_class, lambda x: []),
+            self.rules_trie.get(get_string_id(rules_class), Trie()),
+            gradation_reversal.get(rules_class, lambda x, y: []),
             valid_lemma,
         )
         return lemmas
@@ -191,23 +207,19 @@ class FinnishLemmatizer(Lemmatizer):
 
         forms = []
         for s in enclitic_forms:
-            vowel_conversion_needed = self._front_vowel_word(s)
+            harmony1 = self._vowel_harmony_type(s)
+            for transformation in rules.find(reversed(s)):
+                harmony2 = self._vowel_harmony_type(transformation.add)
+                if self._incompatible_vowels(harmony1, harmony2):
+                    continue
 
-            for old, new, grad_pattern in rules:
-                if vowel_conversion_needed:
-                    old = self._convert_to_front_vowels(old)
-                    new = self._convert_to_front_vowels(new)
+                for form in transformation(s, reverse_gradation):
+                    if valid_lemma(form, index):
+                        forms.append(form)
 
-                if s.endswith(old):
-                    rule_result = s[: len(s) - len(old)] + new
-                    gradation_forms = reverse_gradation(rule_result, grad_pattern)
-                    for form in gradation_forms:
-                        if valid_lemma(form, index):
-                            forms.append(form)
+                    for exc in exceptions.get(form, []):
+                        forms.insert(0, exc)
 
-                    if new == '':
-                        for exc in exceptions.get(rule_result, []):
-                            forms.insert(0, exc)
         # Remove duplicates but preserve the ordering of applied "rules"
         forms = list(OrderedDict.fromkeys(forms))
         # Put exceptions at the front of the list, so they get priority.
@@ -240,13 +252,29 @@ class FinnishLemmatizer(Lemmatizer):
                            string.endswith('minen') or
                            not string.isalpha())
 
-    def _front_vowel_word(self, string):
+    def _vowel_harmony_type(self, string):
         last_front = max(string.rfind(x) for x in "äöy")
         last_back = max(string.rfind(x) for x in "aou")
-        return last_front > last_back
+        if last_front > last_back:
+            return 'front'
+        elif last_front < last_back:
+            return 'back'
+        else:
+            return 'indefinite'
 
-    def _convert_to_front_vowels(self, string):
-        return string.replace("a", "ä").replace("o", "ö").replace("u", "y")
+    def _incompatible_vowels(self, harmony_type1, harmony_type2):
+        return ((harmony_type1 == 'front' and harmony_type2 == 'back') or
+                (harmony_type1 == 'back' and harmony_type2 == 'front'))
+
+    def _build_trie(self, rules_table):
+        rules_trie = {}
+        for pos, rules in rules_table.items():
+            trie = Trie()
+            for old, new, gradation in rules:
+                transformation = SuffixTransformation(len(old), new, gradation)
+                trie.insert(reversed(old), transformation)
+            rules_trie[pos] = trie
+        return rules_trie
 
 
 def create_lemmatizer():

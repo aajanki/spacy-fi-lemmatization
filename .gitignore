@@ -1,4 +1,5 @@
 data/
 lookups/
 .venv/
+*.pyc
 __pycache__/
