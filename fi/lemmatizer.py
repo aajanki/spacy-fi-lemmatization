@@ -70,12 +70,12 @@ gradation_patterns_noun = {
         ("av1", re.compile(r"^(.+?)(uvu|yvy)()$")),
         ("av1", re.compile(r"^(.+?)(mm|nn|ll|rr|ng|t|p|k|v|d)([aeiouyäö][bcdfghjklmnpqrstvwxz]?)$")),
         ("av3", re.compile(r"^(.+?)(j)([aeiouyäö])$")),
-        ("av5", re.compile(r"^(.+?[aeiouyäö][aeiouyäö])()([aeiouyäö])$")),
+        ("av5", re.compile(r"^(.*?[aeiouyäö][aeiouyäö])()([aeiouyäö])$")),
     ],
     "s": [
         ("av2", re.compile(r"^(.+?)(tt|pp|kk|mp|nt|lt|rt|nk|p|t)([aeiouyäö][bcdfghjklmnpqrstvwxz]?)$")),
         ("av4", re.compile(r"^(.+?)(k)([aeiouyäö])$")),
-        ("av6", re.compile(r"^(.+?[aeiouyäö][aeiouyäö])(k)([aeiouyäö])$")),
+        ("av6", re.compile(r"^(.*?[aeiouyäö][aeiouyäö])(k)([aeiouyäö])$")),
     ]
 }
 
@@ -83,12 +83,12 @@ gradation_patterns_verb = {
     "w": [
         ("av1", re.compile(r"^(.+?)(mm|nn|ll|rr|ng|t|p|k|v|d)(.+)$")),
         ("av3", re.compile(r"^(.+?)(j)([aeiouyäö].*)$")),
-        ("av5", re.compile(r"^(.+?[aeiouyäö])()([aeiouyäö].*)$")),
+        ("av5", re.compile(r"^(.*?[aeiouyäö][aeiouyäö])()([aeiouyäö].*)$")),
     ],
     "s": [
         ("av2", re.compile(r"^(.+?)(tt|pp|kk|mp|nt|lt|rt|nk|bb|gg|p|t)(.+)$")),
         ("av4", re.compile(r"^(.+?)(k)([aeiouyäö].*)$")),
-        ("av6", re.compile(r"^(.+?[aeiouyäö])(k)([aeiouyäö].*)$")),
+        ("av6", re.compile(r"^(.*?[aeiouyäö][aeiouyäö])(k)([aeiouyäö].*)$")),
     ]
 }
 
