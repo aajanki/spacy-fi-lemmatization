@@ -94,6 +94,8 @@ class FinnishLemmatizer(Lemmatizer):
         matching_pos = [x for x in base_and_pos if x[1] == univ_pos]
         if matching_pos:
             forms.extend(x[0] for x in matching_pos)
+        elif univ_pos == 'adv':
+            oov_forms.append(self._remove_enclitics(string))
         elif analyses:
             oov_forms.extend(x[0] for x in base_and_pos)
 
@@ -175,7 +177,18 @@ class FinnishLemmatizer(Lemmatizer):
         else:
             return analysis.get("BASEFORM")
 
+    def _remove_enclitics(self, word):
+        enclitics = [
+            'ko', 'kö', 'han', 'hän', 'pa', 'pä', 'kaan', 'kään', 'kin',
+            # Most common stacked enclitics:
+            'kohan', 'köhän', 'pahan', 'pähän', 'kaankohan', 'käänköhän'
+        ]
+        enclitics_re = re.compile('(?:' + '|'.join(enclitics) + ')$')
+        return enclitics_re.sub('', word)
+
 
 def create_lemmatizer():
     lookups = Lookups()
+    with open('lookups2/fi_lemma_exc.json') as f3:
+        lookups.add_table('lemma_exc', json.load(f3))
     return FinnishLemmatizer(lookups)

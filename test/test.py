@@ -276,6 +276,8 @@ testcases = {
     ],
 
     'adv': [
+        ('myös', ['myös']),
+        ('vain', ['vain']),
         ('vuoksi', ['vuoksi']),
         ('tänäänkin', ['tänään']),
         ('kohta', ['kohta']),
@@ -286,6 +288,22 @@ testcases = {
         ('luonnollisestikaan', ['luonnollisesti']),
         ('viidesti', ['viidesti']),
         ('tuhannestikin', ['tuhannesti']),
+        ('tarpeeksi', ['tarpeeksi']),
+        ('onneksikaan', ['onneksi']),
+        ('aluksi', ['aluksi']),
+        ('toiseksi', ['toiseksi']),
+        ('kunnolla', ['kunnolla']),
+        ('lopulta', ['lopulta']),
+        ('täynnä', ['täynnä']),
+        ('päällä', ['päällä']),
+        ('päälle', ['päälle']),
+        ('välillä', ['välillä']),
+        ('varsinkin', ['varsinkin']),
+        ('tosin', ['tosin']),
+        ('tosiaan', ['tosiaan']),
+        ('edelleen', ['edelleen']),
+        ('kanssamme', ['kanssa']),
+        ('postitse', ['postitse']),
     ],
 
     'num': [
