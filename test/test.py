@@ -304,6 +304,7 @@ testcases = {
         ('edelleen', ['edelleen']),
         ('kanssamme', ['kanssa']),
         ('postitse', ['postitse']),
+        ('järeämmin', ['järeämmin']),
     ],
 
     'num': [

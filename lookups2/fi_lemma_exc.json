@@ -1,5 +1,9 @@
 {
     "adv": {
+	"melko": ["melko"],
+	"kuitenkin": ["kuitenkin"],
+	"tietenkin": ["tietenkin"],
+	"varmaankin": ["varmaankin"],
 	"varsinkin": ["varsinkin"]
     }
 }
