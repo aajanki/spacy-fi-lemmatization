@@ -73,19 +73,29 @@ class FinnishLemmatizer(Lemmatizer):
         return lemmas
 
     def lemmatize(self, string, index, exceptions, rules, univ_pos):
+        # lemmatize only the last part of hyphenated words: VGA-kaapelissa
+        parts = string.rsplit('-', 1)
+        lemma = self.lemmatize_compound(parts[-1], index, exceptions, rules, univ_pos)
+
+        if len(parts) == 1:
+            return lemma
+        else:
+            return [parts[0] + '-' + lemma[0]]
+
+    def lemmatize_compound(self, string, index, exceptions, rules, univ_pos):
         orig = string
         oov_forms = []
         forms = []
 
-        analyses = self.voikko.analyze(orig)
-        base_and_pos = list(chain.from_iterable([self._baseform_and_pos(x) for x in analyses]))
+        analyses = self.voikko.analyze(string)
+        base_and_pos = list(chain.from_iterable([
+            self._baseform_and_pos(x) for x in analyses
+        ]))
         matching_pos = [x for x in base_and_pos if x[1] == univ_pos]
         if matching_pos:
             forms.extend(x[0] for x in matching_pos)
         elif analyses:
             oov_forms.extend(x[0] for x in base_and_pos)
-        else:
-            oov_forms.append(orig)
 
         forms = list(OrderedDict.fromkeys(forms))
 
