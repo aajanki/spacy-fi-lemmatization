@@ -45,10 +45,10 @@ testcases = {
         ('öissä', ['yö']),
         ('ylitöissä', ['ylityö']),
         ('emäntien', ['emäntä', 'emäntie']),
-        ('perusteluissa', ['perustelu']),
+        ('perusteluissa', ['perustelu', 'perusteluu']),
         ('esittelijä', ['esittelijä']),
         ('esittelijät', ['esittelijä']),
-        ('tilanne', ['tilanne']),
+        ('tilanne', ['tilanne', 'tila']),
         ('ensi-ilta', ['ensi-ilta']),
         ('elokuvan', ['elokuva']),
         ('tietoja', ['tieto']),
@@ -69,10 +69,20 @@ testcases = {
         ('ruokaa', ['ruoka']),
         ('tulevaisuudessa', ['tulevaisuus']),
         ('ihminen', ['ihminen']),
+
+        # -minen
         ('ajaminenkaan', ['ajaminen']),
         ('testaamisessa', ['testaaminen']),
         ('yksipuolistuminen', ['yksipuolistuminen']),
         ('sulautumiseen', ['sulautuminen']),
+        ('löytäminen', ['löytäminen']),
+        ('opiskeleminen', ['opiskeleminen']),
+        ('kuulemisiin', ['kuuleminen']),
+        ('lukemisella', ['lukeminen']),
+        ('häiritsemisemme', ['häiritseminen']),
+        ('hyppäämiselläkään', ['hyppääminen']),
+        ('välivaiheistuminen', ['välivaiheistuminen']),
+        ('kaupallistuminenko', ['kaupallistuminen']),
 
         # compound words
         ('1500-luvulla', ['1500-luku']),
@@ -97,6 +107,7 @@ testcases = {
         ('kansalaisuuskäsitteenä', ['kansalaisuuskäsite']),
         ('laivapojilla', ['laivapoika']),
         ('valtameriin', ['valtameri']),
+        ('VGA-kaapelia', ['VGA-kaapeli']),
 
         # gradation test cases
         # av1
@@ -169,7 +180,7 @@ testcases = {
         ('pinositte', ['pinota']),
         ('valaistuivat', ['valaistua']),
         ('jäi', ['jäädä']),
-        ('friikahti', ['friikahtaa']),
+        ('möksähti', ['möksähtää']),
         ('pelastuimme', ['pelastua']),
 
         # conditional
@@ -205,6 +216,7 @@ testcases = {
         # NUT-participle
         ('kimpaantunut', ['kimpaantua']),
         ('pyytänyt', ['pyytää']),
+        ('leikkinytkin', ['leikkiä']),
 
         # enclitics
         ('pohdinko', ['pohtia']),
@@ -230,13 +242,15 @@ testcases = {
         ('lämmin', ['lämmin']),
         ('mielenkiintoinen', ['mielenkiintoinen']),
         ('normaaliin', ['normaali']),
-        ('kimpaantunut', ['kimpaantunut']),
         ('maalaamatontakin', ['maalaamaton']),
         ('kultaiset', ['kultainen']),
         ('punaisten', ['punainen']),
         ('sujuvilla', ['sujuva']),
         ('ranskalaisemme', ['ranskalainen']),
         ('ihanan', ['ihana']),
+        ('onnistunut', ['onnistunut']),
+        ('rajoittunutkin', ['rajoittunut']),
+        ('tuohtunutta', ['tuohtunut']),
 
         # komparatiivi
         ('lämpimämpi', ['lämmin']),
@@ -266,6 +280,10 @@ testcases = {
         ('tänäänkin', ['tänään']),
         ('kohta', ['kohta']),
         ('piankin', ['pian']),
+        ('nopeasti', ['nopeasti']),
+        ('useasti', ['useasti']),
+        ('fyysisestikin', ['fyysisesti']),
+        ('luonnollisestikaan', ['luonnollisesti']),
     ],
 
     'num': [
