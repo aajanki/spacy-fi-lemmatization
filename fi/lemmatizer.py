@@ -105,7 +105,7 @@ class FinnishLemmatizer(Lemmatizer):
         # This is a dodgy heuristic -- but it's the best we can do until we get
         # frequencies on this. We can at least prune out problematic exceptions,
         # if they shadow more frequent analyses.
-        for exc in exceptions.get(orig, []):
+        for exc in exceptions.get(orig.lower(), []):
             if exc not in forms:
                 forms.insert(0, exc)
         if not forms:
