@@ -13,8 +13,10 @@ from voikko import libvoikko
 
 
 class FinnishLemmatizer(Lemmatizer):
-    compound_re = re.compile(r"\+(\w+)\(\+?[\w=]+\)")
-    stem_re = re.compile(r"\b(\w+)\[Tn4\]mi")
+    compound_re = re.compile(r"\+(\w+)(?:\(\+?[\w=]+\))?")
+    minen_re = re.compile(r"\b(\w+)\[Tn4\]mi")
+    sti_re = re.compile(r"\b(\w+)\[Ssti\]sti")
+    ny_re = re.compile(r"\[X\]\[\w+\]\[Ny\](\w+)")
     voikko_pos_to_upos = {
         "nimisana": "noun",
         "teonsana": "verb",
@@ -108,7 +110,11 @@ class FinnishLemmatizer(Lemmatizer):
             analysis.get("MOOD") == "MINEN-infinitive"
         ):
             # MINEN infinitive
-            return [(self._minen_form(analysis), "noun")]
+            form = self._fst_form(analysis, self.minen_re, "minen")
+            if form:
+                return [(form, "noun")]
+            else:
+                return [(baseform, "verb")]
         elif (voikko_class == "laatusana" and
               analysis.get("PARTICIPLE") in ["past_active", "past_passive"] and
               analysis.get("SIJAMUOTO") == "nimento" and
@@ -122,24 +128,35 @@ class FinnishLemmatizer(Lemmatizer):
                 (self._past_perfect_tense(analysis), "verb"),
                 (baseform, "adj")
             ]
+        elif (voikko_class in ["laatusana", "lukusana"] and
+              analysis.get("SIJAMUOTO") == "kerrontosti"
+        ):
+            form = self._fst_form(analysis, self.sti_re, "sti")
+            if form:
+                return [(form, "adv")]
+            else:
+                return [(baseform, self.voikko_pos_to_upos[voikko_class])]
         elif voikko_class in self.voikko_pos_to_upos:
             return [(baseform, self.voikko_pos_to_upos[voikko_class])]
         else:
             return [(baseform, None)]
 
-    def _minen_form(self, analysis):
-        compounds = self.compound_re.findall(analysis.get("WORDBASES"))
-        stem_match = self.stem_re.search(analysis.get("FSTOUTPUT"))
-        if stem_match:
-            stem = stem_match.group(1)
-            if len(compounds) > 1:
-                form = "".join(compounds[:-1]) + stem + "minen"
-            else:
-                form = stem + "minen"
+    def _fst_form(self, analysis, stem_re, suffix):
+        fstoutput = analysis.get("FSTOUTPUT")
+        ny_match = self.ny_re.search(fstoutput)
+        if ny_match:
+            return ny_match.group(1)
 
-            return form
+        fst_match = stem_re.search(fstoutput)
+        if not fst_match:
+            return None
+
+        stem = fst_match.group(1)
+        compounds = self.compound_re.findall(analysis.get("WORDBASES"))
+        if len(compounds) > 1:
+            return "".join(compounds[:-1]) + stem + suffix
         else:
-            return analysis.get("BASEFORM")
+            return stem + suffix
 
     def _past_perfect_tense(self, analysis):
         m = re.search(r"\((\w+)\)", analysis.get("WORDBASES"))

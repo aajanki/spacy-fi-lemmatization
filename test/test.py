@@ -284,6 +284,8 @@ testcases = {
         ('useasti', ['useasti']),
         ('fyysisestikin', ['fyysisesti']),
         ('luonnollisestikaan', ['luonnollisesti']),
+        ('viidesti', ['viidesti']),
+        ('tuhannestikin', ['tuhannesti']),
     ],
 
     'num': [
