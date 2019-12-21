@@ -89,7 +89,7 @@ class FinnishLemmatizer(Lemmatizer):
 
         analyses = self.voikko.analyze(string)
         base_and_pos = list(chain.from_iterable([
-            self._baseform_and_pos(x) for x in analyses
+            self._baseform_and_pos(x, string) for x in analyses
         ]))
         matching_pos = [x for x in base_and_pos if x[1] == univ_pos]
         if matching_pos:
@@ -114,7 +114,7 @@ class FinnishLemmatizer(Lemmatizer):
             forms.append(orig)
         return forms
 
-    def _baseform_and_pos(self, analysis):
+    def _baseform_and_pos(self, analysis, orig):
         baseform = analysis.get("BASEFORM")
         voikko_class = analysis.get("CLASS")
 
@@ -148,6 +148,8 @@ class FinnishLemmatizer(Lemmatizer):
                 return [(form, "adv")]
             else:
                 return [(baseform, self.voikko_pos_to_upos[voikko_class])]
+        elif voikko_class == 'seikkasana' and orig.endswith('itse'):
+            return [(orig, 'adv')]
         elif voikko_class in self.voikko_pos_to_upos:
             return [(baseform, self.voikko_pos_to_upos[voikko_class])]
         else:
