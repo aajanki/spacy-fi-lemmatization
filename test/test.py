@@ -220,6 +220,12 @@ testcases = {
         ('kadehdittuja', ['kadehtia']),
         ('neuvotelleet', ['neuvotella']),
 
+        # VA-participle
+        ('valittava', ['valittaa']),
+        ('lapioiva', ['lapioida']),
+        ('kestävä', ['kestää']),
+        ('häiritsevät', ['häiritä']),
+
         # agent participle
         ('ottama', ['ottaa']),
         ('keräämä', ['kerätä']),
@@ -258,6 +264,7 @@ testcases = {
         ('onnistunut', ['onnistunut']),
         ('rajoittunutkin', ['rajoittunut']),
         ('tuohtunutta', ['tuohtunut']),
+        ('valittava', ['valittava']),
 
         # komparatiivi
         ('lämpimämpi', ['lämmin']),

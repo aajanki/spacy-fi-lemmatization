@@ -129,9 +129,12 @@ class FinnishLemmatizer(Lemmatizer):
                 return [(baseform, "verb")]
 
         elif (voikko_class == "laatusana" and
-              analysis.get("PARTICIPLE") in ["past_active", "past_passive"]
+              analysis.get("PARTICIPLE") in ["past_active",
+                                             "past_passive",
+                                             "present_active",
+                                             "present_passive"]
         ):
-            # NUT and TU participles
+            # VA, NUT and TU participles
             return [
                 (self._first_wordbase(analysis), "verb"),
                 (baseform, "adj")
