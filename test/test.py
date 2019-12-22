@@ -217,6 +217,8 @@ testcases = {
         ('kimpaantunut', ['kimpaantua']),
         ('pyytänyt', ['pyytää']),
         ('leikkinytkin', ['leikkiä']),
+        ('kadehdittuja', ['kadehtia']),
+        ('neuvotelleet', ['neuvotella']),
 
         # agent participle
         ('ottama', ['ottaa']),

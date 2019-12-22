@@ -74,13 +74,13 @@ class FinnishLemmatizer(Lemmatizer):
 
     def lemmatize(self, string, index, exceptions, rules, univ_pos):
         # lemmatize only the last part of hyphenated words: VGA-kaapelissa
-        parts = string.rsplit('-', 1)
+        parts = string.rsplit("-", 1)
         lemma = self.lemmatize_compound(parts[-1], index, exceptions, rules, univ_pos)
 
         if len(parts) == 1:
             return lemma
         else:
-            return [parts[0] + '-' + lemma[0]]
+            return [parts[0] + "-" + lemma[0]]
 
     def lemmatize_compound(self, string, index, exceptions, rules, univ_pos):
         orig = string
@@ -92,7 +92,7 @@ class FinnishLemmatizer(Lemmatizer):
             self._baseform_and_pos(x, string) for x in analyses
         ]))
         matching_pos = [x for x in base_and_pos if x[1] == univ_pos]
-        if univ_pos == 'adv' and analyses:
+        if univ_pos == "adv" and analyses:
             oov_forms.append(self._normalize_adv(analyses[0], orig.lower()))
         elif matching_pos:
             forms.extend(x[0] for x in matching_pos)
@@ -129,12 +129,7 @@ class FinnishLemmatizer(Lemmatizer):
                 return [(baseform, "verb")]
 
         elif (voikko_class == "laatusana" and
-              analysis.get("PARTICIPLE") in ["past_active", "past_passive"] and
-              analysis.get("SIJAMUOTO") == "nimento" and
-              (baseform.endswith("nut") or
-               baseform.endswith("nyt") or
-               baseform.endswith("tu") or
-               baseform.endswith("ty"))
+              analysis.get("PARTICIPLE") in ["past_active", "past_passive"]
         ):
             # NUT and TU participles
             return [
@@ -157,8 +152,8 @@ class FinnishLemmatizer(Lemmatizer):
             else:
                 return [(baseform, self.voikko_pos_to_upos[voikko_class])]
 
-        elif voikko_class == 'seikkasana' and orig.endswith('itse'):
-            return [(orig, 'adv')]
+        elif voikko_class == "seikkasana" and orig.endswith("itse"):
+            return [(orig, "adv")]
 
         elif voikko_class in self.voikko_pos_to_upos:
             return [(baseform, self.voikko_pos_to_upos[voikko_class])]
@@ -214,6 +209,6 @@ class FinnishLemmatizer(Lemmatizer):
 
 def create_lemmatizer():
     lookups = Lookups()
-    with open('lookups/fi_lemma_exc.json') as f:
-        lookups.add_table('lemma_exc', json.load(f))
+    with open("lookups/fi_lemma_exc.json") as f:
+        lookups.add_table("lemma_exc", json.load(f))
     return FinnishLemmatizer(lookups)
