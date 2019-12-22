@@ -7,5 +7,6 @@ pip install -r requirements.txt
 
 scripts/download_data.sh
 
-scripts/build_lookups.sh
+# Evaluate lemmatizer
+python scripts/eval_conllu.py < data/UD_Finnish-TDT/fi_tdt-ud-train.conllu
 ```
