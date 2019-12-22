@@ -203,6 +203,6 @@ class FinnishLemmatizer(Lemmatizer):
 
 def create_lemmatizer():
     lookups = Lookups()
-    with open('lookups2/fi_lemma_exc.json') as f3:
-        lookups.add_table('lemma_exc', json.load(f3))
+    with open('lookups/fi_lemma_exc.json') as f:
+        lookups.add_table('lemma_exc', json.load(f))
     return FinnishLemmatizer(lookups)
