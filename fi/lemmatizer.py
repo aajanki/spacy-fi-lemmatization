@@ -127,6 +127,7 @@ class FinnishLemmatizer(Lemmatizer):
                 return [(form, "noun")]
             else:
                 return [(baseform, "verb")]
+
         elif (voikko_class == "laatusana" and
               analysis.get("PARTICIPLE") in ["past_active", "past_passive"] and
               analysis.get("SIJAMUOTO") == "nimento" and
@@ -137,9 +138,16 @@ class FinnishLemmatizer(Lemmatizer):
         ):
             # NUT and TU participles
             return [
-                (self._past_perfect_tense(analysis), "verb"),
+                (self._first_wordbase(analysis), "verb"),
                 (baseform, "adj")
             ]
+
+        elif (voikko_class == "nimisana" and
+              analysis.get("PARTICIPLE") == "agent"
+        ):
+            # agent participle
+            return [(self._first_wordbase(analysis), "verb")]
+
         elif (voikko_class in ["laatusana", "lukusana"] and
               analysis.get("SIJAMUOTO") == "kerrontosti"
         ):
@@ -148,10 +156,13 @@ class FinnishLemmatizer(Lemmatizer):
                 return [(form, "adv")]
             else:
                 return [(baseform, self.voikko_pos_to_upos[voikko_class])]
+
         elif voikko_class == 'seikkasana' and orig.endswith('itse'):
             return [(orig, 'adv')]
+
         elif voikko_class in self.voikko_pos_to_upos:
             return [(baseform, self.voikko_pos_to_upos[voikko_class])]
+
         else:
             return [(baseform, None)]
 
@@ -172,7 +183,7 @@ class FinnishLemmatizer(Lemmatizer):
         else:
             return stem + suffix
 
-    def _past_perfect_tense(self, analysis):
+    def _first_wordbase(self, analysis):
         m = re.search(r"\((\w+)\)", analysis.get("WORDBASES"))
         if m:
             return m.group(1)

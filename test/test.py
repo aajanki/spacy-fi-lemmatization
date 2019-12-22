@@ -218,6 +218,11 @@ testcases = {
         ('pyytänyt', ['pyytää']),
         ('leikkinytkin', ['leikkiä']),
 
+        # agent participle
+        ('ottama', ['ottaa']),
+        ('keräämä', ['kerätä']),
+        ('harrastama', ['harrastaa']),
+
         # enclitics
         ('pohdinko', ['pohtia']),
         ('lähdettehän', ['lähteä']),
