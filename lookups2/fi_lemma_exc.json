@@ -1,28 +1,21 @@
 {
     "adv": {
-	"aikaan": ["aikaan"],
 	"ainakin": ["ainakin"],
+	"ainakaan": ["ainakaan"],
+	"alkuunkin": ["alkuunkin"],
 	"alkuunkaan": ["alkuunkaan"],
-	"ikään": ["ikään"],
-	"jopa": ["jopa"],
-	"jospa": ["jospa"],
 	"kaikin": ["kaikin"],
-	"kuitenkin": ["kuitenkin"],
 	"läheskään": ["läheskään"],
-	"melko": ["melko"],
+	"milloinkin": ["milloinkin"],
 	"milloinkaan": ["milloinkaan"],
-	"niinpä": ["niinpä"],
 	"ollenkaan": ["ollenkaan"],
-	"pitkään": ["pitkään"],
-	"sekaan": ["sekaan"],
-	"tarkkaan": ["tarkkaan"],
 	"tietenkin": ["tietenkin"],
 	"tietenkään": ["tietenkään"],
-	"turhan": ["turhan"],
-	"vaikkapa": ["vaikkapa"],
 	"varmaankin": ["varmaankin"],
+	"varmaankaan": ["varmaankaan"],
 	"varsinkin": ["varsinkin"],
+	"varsinkaan": ["varsinkaan"],
 	"vieläkin": ["vieläkin"],
-	"vieläpä": ["vieläpä"]
+	"vieläkään": ["vieläkään"]
     }
 }

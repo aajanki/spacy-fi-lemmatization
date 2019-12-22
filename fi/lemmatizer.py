@@ -92,10 +92,10 @@ class FinnishLemmatizer(Lemmatizer):
             self._baseform_and_pos(x, string) for x in analyses
         ]))
         matching_pos = [x for x in base_and_pos if x[1] == univ_pos]
-        if matching_pos:
+        if univ_pos == 'adv' and analyses:
+            oov_forms.append(self._normalize_adv(analyses[0], orig.lower()))
+        elif matching_pos:
             forms.extend(x[0] for x in matching_pos)
-        elif univ_pos == 'adv':
-            oov_forms.append(self._remove_enclitics(string))
         elif analyses:
             oov_forms.extend(x[0] for x in base_and_pos)
 
@@ -179,14 +179,26 @@ class FinnishLemmatizer(Lemmatizer):
         else:
             return analysis.get("BASEFORM")
 
-    def _remove_enclitics(self, word):
-        enclitics = [
-            'ko', 'kö', 'han', 'hän', 'pa', 'pä', 'kaan', 'kään', 'kin',
-            # Most common stacked enclitics:
-            'kohan', 'köhän', 'pahan', 'pähän', 'kaankohan', 'käänköhän'
-        ]
-        enclitics_re = re.compile('(?:' + '|'.join(enclitics) + ')$')
-        return enclitics_re.sub('', word)
+    def _normalize_adv(self, analysis, word):
+        focus = analysis.get("FOCUS")
+        kysymysliite = analysis.get("KYSYMYSLIITE")
+
+        if focus and kysymysliite:
+            k = 2
+        elif focus or kysymysliite:
+            k = 1
+        else:
+            k = 0
+        for _ in range(k):
+            if focus and word.endswith(focus):
+                word = word[:-len(focus)]
+            elif kysymysliite and (word.endswith("ko") or word.endswith("kö")):
+                word = word[:-2]
+
+        if analysis.get("POSSESSIVE") and not analysis.get("SIJAMUOTO"):
+            return analysis.get("BASEFORM")
+        else:
+            return word
 
 
 def create_lemmatizer():
