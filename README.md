@@ -1,5 +1,7 @@
 # Experimental Finnish lemmatizer for SpaCy
 
+**NOTE**: This is obsolete. See the updated version of the lemmatizer in the [spacy-fi](https://github.com/aajanki/spacy-fi) repository.
+
 ```
 python3 -m venv .venv
 source .venv/bin/activate
